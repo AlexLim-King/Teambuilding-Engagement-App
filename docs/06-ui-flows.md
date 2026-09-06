@@ -60,12 +60,12 @@ fits without scrolling.
                         └──────────────┘
                              │
                              ▼
-                        P-6 Nominate (one screen per question)
+                        P-6 Nominate (one question, rotates each round)
                         ┌──────────────┐
-                        │ Who helped   │
-                        │ the team     │
-                        │ decide what  │
-                        │ to do?       │
+                        │ Who did the  │
+                        │ work nobody  │
+                        │ else wanted? │
+                        │              │
                         │ ┌──────────┐ │
                         │ │ Ben      │ │  ← 44px rows, tap to pick
                         │ │ Chloe    │ │
@@ -127,11 +127,22 @@ Sync is the app's problem, not theirs.
 ```
 
 **F-2 Event setup — roster import.** Drag a CSV or XLSX in. The importer must
-show a mapping preview (which column is the name? the department?) and a warning
-list before committing: duplicate names, blank departments, unrecognised
-leadership values. Real client namelists are messy; an importer that fails
-silently on a BOM or a "Tan, Alina" ordering will cost a facilitator twenty
+show a mapping preview (which column is the name? the department? the NRIC?) and
+a warning list before committing: duplicate names, blank departments,
+unrecognised leadership values. Real client namelists are messy; an importer that
+fails silently on a BOM or a "Tan, Alina" ordering will cost a facilitator twenty
 minutes on the morning of an event (R2).
+
+The preview must state the derived gender split explicitly:
+
+> **Derived from NRIC:** 34 male · 26 female · **2 unreadable**
+> *NRIC numbers are used to determine gender and are not saved.*
+
+Both halves of that panel matter. The counts let a facilitator catch a parsing
+failure before it becomes a room full of wrong teams; the second line is what you
+show a client who asks what you did with their staff ID numbers. The 2 unreadable
+rows appear in a **Needs tagging** list with male / female / unspecified buttons —
+a few taps, done once, before the event.
 
 **F-3 Round planner — the coverage forecast.** As the facilitator adjusts team
 size and number of rounds, show the live arithmetic from
@@ -148,17 +159,30 @@ it replaces a promise you cannot keep with a number you can plan around.
 **F-4 Live round.**
 - Join board: `41 / 48 joined`, with the 7 missing names listed so they can be
   called out by name.
-- **Form teams** → shows the *proposal* with a quality summary ("0 repeat
-  pairings · 2 teams with 2 from Engineering · leadership spread OK") and
-  drag-to-move override. Re-roll with a new seed is one tap.
+- **Form teams** → shows the *proposal* with a quality summary and drag-to-move
+  override. Re-roll with a new seed is one tap. The summary reads:
+
+  > **0 repeat pairings · 0 repeat evaluations · gender within 1 of target on all
+  > teams · 2 teams with 2 from Engineering · leadership spread OK**
+
+  "0 repeat evaluations" is the line that answers the question participants
+  actually ask, so it is stated every round rather than assumed.
 - **Commit** publishes teams and rating assignments.
 - **Open evaluation** → live counter `41 / 48 submitted`, with names of who
   hasn't, so the coach can nudge the room. Close manually or on a timer.
 
-**F-5 Analytics.** Per criterion: adjusted score, raw mean, n, and confidence
-band — always together, never the adjusted score alone (see
-[04](04-scoring-and-bias.md#final-reported-score)). Nomination indices. Team
-comparison. The coverage matrix. Export to XLSX.
+**F-5 Analytics.** Two distinct surfaces, because they have two different
+audiences and only one of them leaves the room:
+
+- *Facilitator view.* Per criterion: adjusted score, raw mean, n, and confidence
+  band — always together, never the adjusted score alone (see
+  [04](04-scoring-and-bias.md#final-reported-score)). Nomination index overall and
+  by trait tag. Team comparison. Coverage matrix.
+- *Client export.* Team-level patterns, the per-round nomination highlights
+  ("Round 2, *who did the work nobody else wanted* — named by 3: Farid"), and the
+  `LEAD` / `WORK` / `SOCIAL` profile shape for people who stood out. **No
+  per-person scores, no ranking.** Generating it is a separate, deliberate action
+  from viewing the facilitator numbers, so the two can never be confused.
 
 Where `n` is too low, the cell reads "insufficient data" and cannot be sorted or
 ranked. That is a deliberate friction: it stops the facilitator from

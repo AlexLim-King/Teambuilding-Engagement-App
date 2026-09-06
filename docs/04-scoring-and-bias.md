@@ -127,31 +127,75 @@ Genuinely valuable, but it needs enough ratings per rater to estimate `σ²_resi
 (realistically 8+, i.e. 3+ rounds with double rating). Ship it behind a flag once
 you have real event data to validate against, not before.
 
-## Nominations ("MVP" questions)
+## Nominations
 
 Nominations are a different animal from Likert ratings and must **not** be
 averaged into the same composite. They are winner-take-all, so they measure
-salience and consensus rather than degree.
+consensus and salience rather than degree.
 
-The normalisation is pleasingly clean. In a round with team size `s`, each of the
-other `s − 1` members nominates one of `s − 1` candidates, so under pure chance a
-person expects exactly **1 nomination per round played**. Therefore:
+Because the question **rotates each round** ([09](09-question-bank.md)), the
+statistics work differently from a repeated MVP question — in a way that is on
+balance better.
+
+### Per-question: qualitative only
+
+A rotating question is asked in exactly one round, so a person has at most one
+round's worth of data on it. Two nominations versus one on a single question is
+noise. Per-question results are therefore reported as **named highlights, never
+scores**:
+
+> Round 2 — *"Who did the work nobody else wanted?"*
+> Named by 3 teammates: **Farid**. Also named: Wei Ling, Priya.
+
+That is exactly the form a client wants for talent-spotting anyway, and it cannot
+be mistaken for a ranking.
+
+### Aggregate: the reportable number
+
+Across all rounds, the normalisation is clean. In a round with team size `s`, each
+of the other `s − 1` members nominates one of `s − 1` candidates, so **under pure
+chance a person expects exactly 1 nomination per round played**:
 
 ```
-nomination_index[j][q] = nominations_received[j][q] / rounds_played[j]
+nomination_index[j] = total nominations received[j] / rounds played[j]
 ```
 
 - `1.0` = chance
-- `2.5` = picked two and a half times more often than chance
-- `0.0` = never picked
+- `2.5` = named two and a half times more often than chance
+- `0.0` = never named
 
-This automatically handles unequal team sizes, people who joined late, and people
-who sat out a round — all of which would corrupt a raw count.
+This handles unequal team sizes, late joiners, and people who sat out a round —
+all of which corrupt a raw count. Skips reduce the denominator's effective size
+and are accounted for by using nominations actually cast rather than rounds
+nominally played.
 
-For small counts, report the index alongside the raw count and a note; do not
-rank people on an index built from 0 vs 1 nominations. A one-sided binomial test
-against `p = 1/(s−1)` gives an honest "is this above chance" flag when you want
-one.
+**Rotation makes this measure better, not worse.** With a repeated MVP question,
+a high index means "was consistently the most conspicuous." With four different
+questions, it means "stood out on *some* positive dimension" — which catches the
+quiet organiser, the persistent one, and the person who encouraged someone, not
+just the loudest. It is a broader construct and a fairer one, and it is closer to
+what "outstanding contributor" actually means.
+
+### By trait tag
+
+Each question carries a `LEAD` / `WORK` / `SOCIAL` tag, so nominations aggregate
+into three interpretable dimensions:
+
+```
+tag_index[j][t] = nominations received on tag-t questions / rounds where a tag-t question was asked
+```
+
+With one question per tag in a 4-round event these are still small numbers — treat
+them as a **profile shape**, not a score. "Farid was named on both `WORK`
+questions and neither `LEAD` question" is a real, useful, defensible observation.
+"Farid scores 2.0 on WORK" is not, and the UI must not render it that way.
+
+### Statistical honesty
+
+A one-sided binomial test against `p = 1/(s−1)` gives an honest "is this above
+chance?" flag when you want one. Do not rank people on an index built from 0
+versus 1 nomination — the app suppresses ranking below the same `min_n` threshold
+that governs Likert scores.
 
 ## Choosing criteria that are actually different
 
@@ -163,11 +207,20 @@ notice they are answering the same thing twice.
 
 A set that spans more of the space, each measuring something the others do not:
 
-| Key | Participant-facing wording | Construct |
-|---|---|---|
-| `contribution` | "Put real effort into the task" | Task input |
-| `support` | "Made it easier for others to contribute" | Interpersonal / inclusion |
-| `direction` | "Helped the team decide what to do" | Emergent leadership |
+Your clients want to spot **potential leaders and outstanding workers**. That
+lens argues for one criterion per dimension of that judgement, each measuring
+something the others do not:
+
+| Key | Participant-facing wording | Construct | Serves |
+|---|---|---|---|
+| `contribution` | "Put real effort into the task" | Task input | Outstanding worker |
+| `support` | "Made it easier for others to contribute" | Interpersonal / inclusion | Team glue |
+| `direction` | "Helped the team decide what to do" | Emergent leadership | Leadership potential |
+
+These are a starting point, not a decision — final wording is still open
+([00](00-decisions.md), question 4). The constraint to hold on to is that the
+three must measure different things; two near-synonyms cost you a third of your
+data.
 
 Two further points on wording, both of which matter more than the algorithm:
 
@@ -192,8 +245,13 @@ A short list, enforced in code rather than left to the facilitator's judgement:
   teams and celebrates contribution; the moment it produces a defensible-looking
   list of the worst people at a company party, you own a liability, not a
   feature.
-- No score shown to participants at v1 (see [00](00-decisions.md), question 4) —
+- No score shown to participants at v1 (see [00](00-decisions.md), question 3) —
   nominations received are positive-only and safe to show.
+- **No per-person scores in the client deliverable at all.** The client receives
+  team-level patterns and a positive-only highlights list built from nominations.
+  Adjusted individual scores stay on the facilitator's screen, where they inform
+  coaching conversations rather than becoming a spreadsheet in someone's HR
+  folder. See [07](07-risks-and-blind-spots.md#3-consequences-you-do-not-control).
 
 ## Validating that any of this works
 

@@ -5,80 +5,104 @@
 | Decision | Choice | Consequence |
 |---|---|---|
 | Participant platform | **Responsive PWA**, mobile-first, degrading to a watch-browser layout | No app store, no install, no per-device cost. Watch-native (Wear OS) stays possible later but is explicitly *not* the first target. |
-| First deliverable | **Spec + architecture** (this repo) | No code until the open questions below are answered. |
-| Connectivity model | **Offline-first** — local writes always succeed, sync opportunistically | Every participant action is queued locally and replayed. See §Architecture and the honest limit in [07](07-risks-and-blind-spots.md#the-offline-distribution-problem). |
+| First deliverable | **Spec + architecture** (this repo) | No code until the remaining open questions are answered. |
+| Connectivity model | **Offline-first** — local writes always succeed, sync opportunistically | Every participant action is queued locally and replayed. See [05](05-architecture.md) and the honest limit in [07](07-risks-and-blind-spots.md#4-the-offline-distribution-problem). |
 | Evaluation anonymity | **Anonymous to peers, identified to the facilitator** | Rater identity is stored, because rater-bias correction is impossible without it. Participants are told this in plain language at join. |
+| Who rates whom | **App-assigned derangement within the team** — everyone rates exactly one teammate, everyone is rated exactly once | No self-rating, no mutual pairs, complete coverage. See [03](03-team-formation.md#rating-assignment). |
+| Repeat ratings | **Hard-forbidden**: a rater is never assigned a ratee they have already rated | Realistically zero repeats for any event under ~6 rounds. See [03](03-team-formation.md#never-rating-the-same-person-twice). |
+| Nomination questions | **One per round, auto-rotating** from a facilitator-editable bank of positive-trait questions | A 4-round event surfaces 4 different traits, spreading recognition beyond the loud and popular. Bank drafted in [09](09-question-bank.md). |
+| Gender balancing | **Roster column**, with gender derivable from Malaysian NRIC on import; facilitator fills gaps before the event | Automates the circle-and-count method. See the NRIC handling rules below — they are not optional. |
+| Gender spread pattern | **Even spread across teams, solos accepted** | 1 per team wherever the ratio allows — matches current practice. |
+| Objective priority | **Balance first**: gender balance > department mix > novel pairings > even sizes | Every team reads as well-mixed each round. Costs coverage — see the trade-off note below. |
+| Individual reporting | **Facilitator only.** Client receives team-level patterns plus a positive-only "names that stood out" list | Keeps the talent-spotting value without handing over a numeric league table built on n = 4. |
 
-## Why "PWA first" rather than a watch app
+## The trade you just made: balance first
 
-The brief says "smart watch ... low cost devices." Those two constraints pull
-apart, and it is worth being blunt about it:
+"Balance wins" and "everyone should meet everyone" pull against each other, and it
+is worth seeing the cost with eyes open.
 
-- A genuine wrist app means **Wear OS**, which means watches from roughly
-  US$130 upward, per participant, that you own, charge, sanitise and inventory.
-  For a 60-person event that is a five-figure hardware line item before a single
-  line of code runs.
-- The cheap watches (sub-US$40 "smart bands") do **not** run third-party apps at
-  all. They run vendor firmware and a companion phone app. Nothing you write can
-  be installed on them.
+Every round the algorithm spends on making each team look right by gender and
+department is a round where it has less freedom to avoid putting the same two
+people together again. In simulation this typically costs **10–20% of achievable
+pairing coverage** on a multi-round event — so a configuration that could have
+reached 43% novel coverage lands nearer 35%.
 
-So "lightweight app on low-cost devices" is achievable — just not on the wrist
-at low cost. The PWA runs on the phone every participant already owns, costs
-nothing per head, installs in one tap, and works offline. The layout is built
-watch-width-first anyway, so if you later buy Wear OS hardware the same screens
-carry across with a thin native shell.
+Two things make this a reasonable choice anyway:
 
-**If a wrist device is genuinely non-negotiable** (e.g. it is part of what you
-sell), say so and the plan changes materially — see
-[07](07-risks-and-blind-spots.md#if-the-watch-is-non-negotiable).
+1. It matches what you already do successfully in the room, and a client watching
+   a well-mixed team is a client who can see the value immediately. Coverage is
+   invisible; a team of five men from Finance is not.
+2. It is **not a hard-coded ordering**. The priority is expressed as weights in
+   the event template, so after a few real events you can shift emphasis per
+   client without a code change — a cross-silo workshop can run novelty-first
+   while a family day runs balance-first.
 
-## Open questions — these block the build
+Implementation note: the priority is a *strong weighting*, not a strict
+lexicographic order. Strict ordering would accept two people meeting for a fourth
+time in order to fix a one-person gender imbalance, which is obviously wrong. The
+weights are set so balance wins ties and minor conflicts, while a severe repeat
+still outranks a cosmetic imbalance. See [03](03-team-formation.md#cost-function).
 
-1. **Who does a participant evaluate?**
-   The brief says "evaluate one other team member." If participants *choose*
-   freely, the popular and the loud collect all the ratings and the quiet
-   collect none — the metric then measures salience, not contribution, and half
-   your people end the event with no data at all.
-   **Recommendation:** the app *assigns* the ratee, cycling within the team so
-   every member is rated exactly once per round. Same effort for the
-   participant, complete coverage, and it makes the bias model identifiable.
-   Keep free choice as a facilitator toggle for clients who insist.
-   → Design assumes **assigned** throughout; see [03](03-team-formation.md#rating-assignment).
+## NRIC handling — read this before writing the importer
 
-2. **Event shape.** Typical headcount? Number of activity rounds per event
-   (2? 4? 8?)? Team size (4? 5? 6?)? These set the statistical power of every
-   number the app reports — with 2 rounds there is very little to say about an
-   individual, with 6 there is quite a lot.
+Using the Malaysian NRIC (MyKad) to derive gender is sound and practical: the
+number is `YYMMDD-PB-###G`, and the final digit `G` is **odd for male, even for
+female**.
 
-3. **One-off or longitudinal?** Is a person tracked across multiple events over
+But an NRIC is among the most sensitive identifiers a Malaysian person has. It
+also encodes date of birth and place of birth, so a namelist with NRICs is a far
+more dangerous file than a namelist with names. Under Malaysia's PDPA 2010 you
+would be holding it as a data user with real obligations, and a leak of that file
+is a materially worse incident than a leak of the event's ratings.
+
+The rules baked into the spec:
+
+- **Derive at import, then discard.** The importer parses the NRIC in the browser,
+  extracts gender (and nothing else), and the full number is **never persisted,
+  never sent to the server, and never sent to a participant device**.
+- Store only `gender` and, if a stable key is needed across events, a salted hash
+  of the NRIC — never the number itself.
+- Validate the format and reject silently-wrong input (12 digits after stripping
+  dashes and spaces). A truncated or mistyped NRIC that happens to parse would
+  assign the wrong gender with no visible error.
+- The import preview shows the derived split (`Derived from NRIC: 34 male, 26
+  female, 2 unreadable`) so the facilitator can catch a parsing failure before it
+  becomes a room full of wrong teams.
+- Where no NRIC or gender column exists, the facilitator tags the gaps on the
+  setup screen. Anyone still untagged is spread evenly as an "unspecified" group
+  rather than being silently defaulted.
+- NRIC-derived gender is *legal-document* gender. It will occasionally not match
+  how someone identifies. The facilitator override exists for that, and gender is
+  never displayed to peers anywhere in the app.
+
+## Open questions — still blocking the build
+
+1. **Event shape.** Typical headcount? Rounds per event (2? 4? 8?)? Team size
+   (4? 5? 6?)? These set the statistical power of every number the app reports,
+   and they determine whether individual scores are reportable at all.
+
+2. **One-off or longitudinal?** Is a person tracked across multiple events over
    months, or does every event start clean? Longitudinal needs stable person
-   identity, consent for retention, and changes the data model. Standalone is
-   far simpler and far safer.
+   identity, consent for retention, and changes the data model. Standalone is far
+   simpler and far safer.
 
-4. **Do participants ever see their own scores?** Recommendation: no individual
-   scores to participants at v1 — only their nominations received ("3 teammates
-   picked you as most helpful"), which is positive-only and safe. Full numbers
-   go to the facilitator and, if the client buys it, to HR.
+3. **Do participants see anything about themselves?** Recommendation: no scores,
+   but *do* show nominations received ("2 teammates picked you for 'kept everyone
+   included'"). Positive-only, safe, and it is the single cheapest thing that
+   makes participants glad they used the app.
 
-5. **Who is the buyer of the analytics** — the facilitator running the day, or
-   the client's HR/L&D who wants a report afterwards? This decides whether the
-   analytics screen is a live ops dashboard or an exportable post-event report.
-   (Cheapest answer: build the ops view now, the report in v2.)
+4. **Final criteria wording.** Deferred by you, correctly. The constraint to
+   remember when you choose: three criteria that measure genuinely different
+   things, not one construct three times. Candidates in
+   [04](04-scoring-and-bias.md#choosing-criteria-that-are-actually-different),
+   oriented toward the "potential leaders and outstanding workers" lens your
+   clients want.
 
-6. **Criteria wording.** Current placeholders — cooperativeness, willingness to
-   help, leadership — are one construct and a half. "Cooperativeness" and
-   "willingness to help" correlate so tightly that participants will give them
-   the same number, and you will have paid two taps for one signal. See
-   [04](04-scoring-and-bias.md#choosing-criteria-that-are-actually-different)
-   for a proposed replacement set.
+5. **Data protection posture.** Who is the data controller — you, or the client
+   company? Default in this spec: client is controller, you are processor, 90-day
+   retention, then aggregate-only. Malaysia's PDPA 2010 applies to commercial
+   transactions and is the operative regime for Malaysian events; Singapore's
+   PDPA if you run there.
 
-7. **Data protection.** Peer evaluations of named individuals are personal data.
-   Under Singapore's PDPA (and GDPR if any participant is in the EU) you need a
-   lawful basis, a stated retention period, and an answer to "can I see what was
-   said about me." Who is the data controller — you, or the client company?
-   Default in this spec: client is controller, you are processor, 90-day
-   retention, then aggregate-only.
-
-8. **Hosting budget.** The sync backend is small (a Postgres and a container),
-   but it is a recurring cost. Rough order: US$0–25/month at this scale on
-   Supabase or Fly.io. Confirm that's acceptable versus a fully local mode.
+6. **Hosting budget.** Roughly US$0–25/month at this scale on Fly.io or Supabase.
+   Confirm that is acceptable versus a fully local mode.

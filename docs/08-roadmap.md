@@ -5,17 +5,22 @@ milestone ends with something you can put in front of a real person.
 
 ## M0 — Answer the open questions *(you, not code)*
 
-Settle [00-decisions.md](00-decisions.md), especially:
-assigned vs. free-choice ratee, event shape (headcount / rounds / team size),
-final criteria wording, and who the analytics buyer is. Everything downstream
-depends on these, and getting them wrong is the expensive kind of wrong.
+Settle what remains in [00-decisions.md](00-decisions.md): **event shape**
+(headcount / rounds / team size), one-off vs. longitudinal, final criteria
+wording, and the data-controller question. Event shape is the one that matters
+most — it decides whether individual scores are reportable at all, and M1's
+synthetic study cannot answer "how many rounds do you need" without a target
+team size to answer it for.
 
 ## M1 — `core` algorithms, headless
 
-`packages/core` only: team formation, the bias model, nomination statistics, CSV
-import. No UI. Delivered with:
+`packages/core` only: team formation (with gender/department/novelty weighting),
+the derangement-based rating assignment, the bias model, nomination statistics,
+and CSV/NRIC import. No UI. Delivered with:
 
-- The property tests listed in [03](03-team-formation.md#test-plan-for-this-module).
+- The property tests listed in [03](03-team-formation.md#test-plan-for-this-module),
+  including the one your requirement turns into: **zero repeat rater→ratee pairs
+  across 1,000 simulated 8-round events**.
 - The **synthetic recovery study** from [04](04-scoring-and-bias.md#validating-that-any-of-this-works),
   producing the table "how many rounds do you need for a reportable individual
   score." That table is a sales asset as much as an engineering result.
@@ -47,10 +52,17 @@ autocomplete miss, every sync retry.
 
 ## M4 — Analytics and export
 
-Adjusted scores with confidence bands and n, nomination indices, coverage matrix,
-team comparison, XLSX export with the caveat header from
-[07](07-risks-and-blind-spots.md#3-consequences-you-do-not-control). Plus the
-one-page facilitator explainer for "why is my score 3.9 when everyone rated me 4."
+Two separate surfaces:
+
+- *Facilitator view* — adjusted scores with confidence bands and n, nomination
+  index overall and by trait tag, coverage matrix, team comparison.
+- *Client export* — team-level patterns and positive-only nomination highlights,
+  with the caveat header from
+  [07](07-risks-and-blind-spots.md#3-consequences-you-do-not-control). No
+  per-person scores.
+
+Plus the one-page facilitator explainer for "why is my score 3.9 when everyone
+rated me 4."
 
 ## M5 — Hardening
 

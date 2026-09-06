@@ -58,16 +58,23 @@ participants, and never showing rankings in the room.
 
 ## 3. Consequences you do not control
 
-You will hand a client a spreadsheet with named individuals and numeric scores.
-You cannot control what happens next, and the plausible bad outcome is that it
-turns up in a performance conversation — an instrument built for a fun day, with
-n = 4, used as evidence about someone's career.
+Whatever you hand a client, you cannot control what happens next. The plausible
+bad outcome is that a number built for a fun day, with n = 4 behind it, turns up
+in a performance conversation as evidence about someone's career.
 
-**What to do:** put it in the contract and on the export. Every exported file
-carries a header: *derived from peer impressions during a teambuilding activity;
-not validated for performance assessment; n per person is small.* Refuse to build
-a "bottom performer" view. Consider withholding individual-level export by
-default and making it an explicit, logged request.
+Your decision to keep per-person scores on the facilitator's screen and give the
+client aggregates plus positive-only highlights removes most of this exposure —
+there is no numeric league table to misuse, because none is produced. That is the
+right call, and it is worth defending when a client asks for the raw scores,
+because they will.
+
+**What to do:** put the posture in the engagement terms so the answer is agreed
+before the day, not negotiated after it. Every export carries a header — *derived
+from peer impressions during a teambuilding activity; not validated for
+performance assessment.* Never build a "bottom performer" view. If you later
+decide a specific client should receive individual scores, make it an explicit,
+logged, per-event decision with its own consent wording — not a default that
+quietly drifts on.
 
 ## 4. The offline distribution problem
 
@@ -104,9 +111,46 @@ because people trust it more.
 [04](04-scoring-and-bias.md#validating-that-any-of-this-works) is not optional.
 Run it before the first client sees a number.
 
+## 6b. NRIC is the most dangerous data in the system
+
+Deriving gender from the NRIC is a good idea operationally and a genuine liability
+if implemented casually. A namelist with NRICs is a materially worse file to leak
+than a namelist with ratings: the number encodes date of birth and place of birth,
+it is used as an identity credential across Malaysian institutions, and it cannot
+be reissued after a breach.
+
+The design answer is to never hold it: parse in the browser, derive gender,
+discard. That is specified in
+[00](00-decisions.md#nric-handling---read-this-before-writing-the-importer) and it
+must be enforced at the code level — no `nric` column exists in the schema, and
+the import parser must be reviewed specifically for accidental persistence
+(a debug log, an error report, a cached upload, a sourcemap). This is the single
+most likely place for a well-meaning implementation to leave the number lying
+around.
+
+Second-order risk: a mistyped or truncated NRIC still parses and yields a
+*confidently wrong* gender. Hence format validation and the visible derived split
+in the import preview — a silent wrong answer is worse than a loud failure.
+
+## 6c. Balance-first has a cost you will eventually notice
+
+You chose balance over novelty, for good reasons
+([00](00-decisions.md#the-trade-you-just-made-balance-first)). The cost arrives
+later in the day, in the fourth or fifth round, as people noticing they are with
+someone they were with before. Simulation puts it at 10–20% of achievable
+coverage.
+
+Two mitigations, neither of which requires changing your choice: the weights are
+per-event, so a client whose stated goal is cross-department mixing can be run
+novelty-first; and the round planner's coverage forecast tells you before the
+event whether the configuration will hold up, so a longer day gets larger teams
+rather than more repeats.
+
 ## 7. Legal and regulatory
 
-Peer evaluations of named individuals are personal data. Under Singapore's PDPA:
+Peer evaluations of named individuals are personal data, and NRICs are personal
+data of a much more sensitive kind. Malaysia's PDPA 2010 is the operative regime
+for Malaysian events; Singapore's PDPA if you run there. Under either:
 consent (or a stated legitimate purpose), a retention limit, an access right, and
 a named controller. If any participant is in the EU, GDPR adds a right to
 erasure and a stricter basis test. A participant asking "what did people say

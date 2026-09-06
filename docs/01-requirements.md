@@ -21,6 +21,10 @@ with 4 minutes to get started.
   so participants only have to type two letters of their name on the day.
 - **F2** I mark which people are leadership, and which department each person is
   in, so the app can spread them.
+- **F2b** Gender is read from the roster — or derived from the NRIC where the
+  namelist has one — so teams come out evenly mixed without me splitting the room
+  into two lines. Anyone the import couldn't determine is flagged for me to tag
+  before the event.
 - **F3** I create an event with a short join code and a QR code I can project.
 - **F4** I see, live, who has joined and who has not, so I can chase stragglers.
 - **F5** I press one button to form teams for the next round, and I can see the
@@ -55,7 +59,14 @@ with 4 minutes to get started.
 
 ### Roster and identity
 - **R1** Import roster from CSV/XLSX. Required column: `name`. Optional:
-  `department`, `is_leadership`, `employee_ref`, `email`, `notes`.
+  `department`, `gender`, `nric`, `is_leadership`, `employee_ref`, `email`, `notes`.
+- **R1b** Where an NRIC column is present, derive gender from the final digit
+  (odd = male, even = female), show the derived split in the import preview, and
+  **discard the number** — never persisted, never transmitted, never on a device.
+  Full rules in [00](00-decisions.md#nric-handling---read-this-before-writing-the-importer).
+- **R1c** Participants whose gender could not be determined are listed on the
+  setup screen for the facilitator to tag, and are spread as their own group until
+  tagged.
 - **R2** Import must survive messy real-world files: BOM, trailing blanks,
   inconsistent header case, duplicate names, "Tan, Alina" vs "Alina Tan".
 - **R3** Duplicate names must be resolvable — surface department in the picker
@@ -70,8 +81,10 @@ with 4 minutes to get started.
 ### Team formation
 - **R7** Form teams of a target size, with configurable min/max.
 - **R8** Hard constraint: at most *N* leadership members per team (default 1).
-- **R9** Soft objectives, weighted: department mix, novel pairings, size balance,
-  leadership spread across rounds. Full spec in [03](03-team-formation.md).
+- **R9** Soft objectives, weighted in this priority order: **gender balance >
+  department mix > novel pairings > even sizes**, plus leadership spread. Gender
+  is spread evenly in proportion to the room's actual ratio. Full spec in
+  [03](03-team-formation.md).
 - **R10** Deterministic given a seed — the same inputs reproduce the same teams,
   so a result can be explained and audited.
 - **R11** Runs on the facilitator's device in under 2 seconds for 200 people,
@@ -82,11 +95,16 @@ with 4 minutes to get started.
 ### Evaluation
 - **R13** Facilitator opens an evaluation window; it can be closed manually or on
   a timer.
-- **R14** Each participant is assigned exactly one teammate to rate (see
-  [00](00-decisions.md), open question 1).
+- **R14** Each participant is assigned exactly one teammate to rate, by a
+  derangement of the team, so every member is rated exactly once.
+- **R14b** A participant is **never** assigned to rate someone they have already
+  rated in this event. Enforced as a hard constraint on the derangement search;
+  the round summary reports the count (expected: 0).
 - **R15** Three Likert criteria, 1–5, labels configurable per event template.
-- **R16** Zero or more nomination questions, each answered by picking one
-  teammate. Self-nomination disabled by default.
+- **R16** One nomination question per round, drawn automatically from a rotating
+  bank of positive-trait questions so each round surfaces a different trait
+  ([09](09-question-bank.md)). Answered by picking one teammate; self-nomination
+  disabled; "no one in particular" always available.
 - **R17** Partial submissions are saved as drafts locally and can be resumed.
 - **R18** A participant cannot submit twice for the same round; re-opening shows
   their existing answer read-only.
@@ -94,8 +112,11 @@ with 4 minutes to get started.
 ### Analytics
 - **R19** Raw mean, bias-adjusted score, and a confidence indicator per person
   per criterion. Full method in [04](04-scoring-and-bias.md).
-- **R20** Nomination counts normalised for the number of times a person was
-  eligible to be nominated.
+- **R20** Nomination index normalised by rounds played, aggregated overall and by
+  trait tag (`LEAD` / `WORK` / `SOCIAL`). Per-question results shown as named
+  highlights, never as scores.
+- **R20b** The client deliverable contains team-level patterns and a positive-only
+  highlights list. Per-person adjusted scores stay on the facilitator's screen.
 - **R21** Team-level cohesion and spread.
 - **R22** Mixing coverage matrix — who has worked with whom, and the percentage
   of all possible pairs realised.

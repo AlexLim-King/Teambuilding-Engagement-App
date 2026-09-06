@@ -48,9 +48,20 @@ Organisation
 | `display_name` | text | As it should appear to peers |
 | `normalised_name` | text | Lowercased, accent-stripped, token-sorted — the autocomplete index |
 | `department` | text null | Free text; normalised on import |
+| `gender` | enum null | `male` \| `female` \| `unspecified`. Balancing input only — **never displayed to peers** |
+| `gender_source` | enum | `roster` \| `nric` \| `facilitator` — so a facilitator can see what to double-check |
 | `is_leadership` | bool | Drives the separation constraint |
 | `employee_ref` | text null | **Never sent to participant devices** |
 | `email` | text null | **Never sent to participant devices** |
+
+There is deliberately **no `nric` column**. Where a client namelist carries
+Malaysian NRICs, the importer parses them in the browser, derives `gender` from
+the final digit (odd = male, even = female), and discards the number. The full
+NRIC is never persisted, never transmitted to the server, and never reaches a
+participant device — it encodes date and place of birth and is far more sensitive
+than anything else in this system. See
+[00](00-decisions.md#nric-handling---read-this-before-writing-the-importer) for
+the full rules, which the importer must implement, not merely respect.
 
 `is_leadership` is deliberately a plain boolean rather than a seniority level.
 The constraint you described — keep leaders apart — is binary in practice. If you
@@ -96,6 +107,7 @@ making 60 people invent passwords.
 | `event_id` | uuid fk | |
 | `sequence` | int | 1, 2, 3 … |
 | `activity_name` | text | "Blindfold Maze" |
+| `nomination_question_key` | text | Drawn from the rotating bank at round creation — see [09](09-question-bank.md) |
 | `state` | enum | `planned` `teams_formed` `active` `evaluating` `closed` |
 | `evaluation_opened_at` | timestamptz null | |
 | `evaluation_closes_at` | timestamptz null | |
@@ -120,11 +132,13 @@ making 60 people invent passwords.
 | `ratee_participant_id` | uuid fk | |
 | unique | `(round_id, rater_participant_id)` | Exactly one assignment per rater per round |
 
-Generated when the round's teams are formed, as a **cyclic permutation within
-each team** — A rates B, B rates C, C rates A. Guarantees every member is rated
-exactly once, no self-ratings, and no participant left with zero data. See
-[03](03-team-formation.md#rating-assignment) for why the cycle is rotated between
-rounds.
+Generated when the round's teams are formed, as a **derangement of each team** —
+a permutation where nobody rates themselves. Because a permutation is a bijection,
+every member is rated exactly once and no participant is left with zero data. The
+chosen derangement additionally excludes 2-cycles (no A↔B back-scratching) and any
+`(rater, ratee)` arc present in `rating_history`, which is what guarantees nobody
+rates the same person twice across the event. See
+[03](03-team-formation.md#never-rating-the-same-person-twice).
 
 ### `submission`
 | column | type | notes |
@@ -170,18 +184,44 @@ programme and a company family day from the same app.
     { "key": "helpfulness",  "label": "Helped teammates who were stuck" },
     { "key": "leadership",   "label": "Gave the team direction" }
   ],
-  "nominations": [
-    { "key": "mvp",          "label": "Who contributed the most?", "allow_skip": true },
-    { "key": "most_fun",     "label": "Who brought the most energy?", "allow_skip": true }
+  // One question per round, drawn in sequence from this bank. See docs/09.
+  "nomination_bank": [
+    { "key": "decided",   "label": "Who helped the team decide what to do?",  "tag": "LEAD",   "allow_skip": true },
+    { "key": "unglamorous","label": "Who did the work nobody else wanted?",   "tag": "WORK",   "allow_skip": true },
+    { "key": "encouraged","label": "Who encouraged someone who was struggling?", "tag": "SOCIAL", "allow_skip": true }
   ],
+  "nomination_rotation": { "one_per_round": true, "no_repeat_tag_consecutively": true },
   "formation": {
     "target_team_size": 5,
     "max_leaders_per_team": 1,
-    "weights": { "repeat_pair": 10.0, "same_department": 3.0, "size_balance": 5.0, "leader_repeat": 8.0 }
+    "gender_pattern": "even_spread",       // vs "avoid_solo"; see docs/00
+    // Balance-first priority. Reordering these changes the emphasis per client.
+    "weights": {
+      "gender_balance": 25.0, "same_department": 15.0, "repeat_pair": 10.0,
+      "leader_repeat": 8.0, "size_balance": 5.0, "hard_violation": 1000.0
+    }
   },
-  "reporting": { "min_n_to_display": 3, "show_scores_to_participants": false }
+  "reporting": {
+    "min_n_to_display": 3,
+    "show_scores_to_participants": false,
+    "client_export": "aggregate_and_highlights"   // never per-person scores
+  }
 }
 ```
+
+### `rating_history`
+| column | type | notes |
+|---|---|---|
+| `event_id` | uuid fk | |
+| `rater_participant_id` | uuid fk | |
+| `ratee_participant_id` | uuid fk | |
+| unique | `(event_id, rater, ratee)` | |
+
+The set of directed pairs already used. Read by the derangement search as a
+forbidden-arc set so **nobody is ever assigned to rate the same person twice** —
+see [03](03-team-formation.md#never-rating-the-same-person-twice). Directed, so
+`A→B` does not forbid `B→A`; the reverse direction is a different judgement and is
+only softly discouraged.
 
 ### `pair_history`
 | column | type | notes |
@@ -200,12 +240,18 @@ thousands of times per run and must do so offline, in memory.
 {
   "event":     { "id", "join_code", "name", "template" },
   "roster":    [ { "roster_person_id", "display_name", "normalised_name", "department" } ],
+               // no gender, no NRIC, no email, no leadership flag
   "me":        { "participant_id", "device_token", "display_name" },
   "myTeam":    { "round_id", "team_number", "members": [ { "participant_id", "display_name" } ] },
   "assignment":{ "round_id", "ratee_participant_id", "ratee_display_name" },
   "outbox":    [ { "submission_id", "payload", "attempts", "last_error" } ]
 }
 ```
+
+Gender, leadership status, emails and employee references are all excluded from
+this payload. Gender in particular is a balancing input the algorithm needs and
+nobody else does — a participant device has no reason to hold it, and shipping it
+would put a gender-labelled staff list on sixty phones.
 
 Note the roster is cached in full on every participant device — that is what
 makes offline autocomplete possible, and it means **every participant's phone
