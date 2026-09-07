@@ -21,6 +21,7 @@ architecture only — no application code yet. Read the docs in order:
 
 | # | Document | What it settles |
 |---|----------|-----------------|
+| — | [**Glossary**](docs/GLOSSARY.md) | **Plain-language definitions for every term used below — start here if anything reads as jargon** |
 | 00 | [Decisions](docs/00-decisions.md) | Locked choices and the open questions still blocking build |
 | 01 | [Requirements](docs/01-requirements.md) | Actors, user stories, functional and non-functional scope |
 | 02 | [Data model](docs/02-data-model.md) | Entities, schema, identity, retention |
