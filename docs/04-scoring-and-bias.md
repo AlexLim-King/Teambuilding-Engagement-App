@@ -115,19 +115,96 @@ a score is how this product would damage someone's standing at work.
 
 ## Missing ratings are not imputed
 
-When a rater leaves before submitting, their intended ratee ends the round one
-rating short. The fix is to do nothing: `n` drops, and the shrinkage above pulls
-that person's estimate slightly further toward the global mean — which is exactly
-what "assume average for the missing one" was trying to achieve, arrived at
-properly.
+When a rating is missing — for any reason — the fix is to do nothing. `n` drops,
+and the shrinkage above pulls that person's estimate slightly further toward the
+global mean. That is what "assume average for the missing one" was reaching for,
+arrived at properly.
 
 Inserting a synthetic average rating instead would report `n = 4` where only three
 people rated, compress variance across the event, and leave invented numbers
 indistinguishable from observed ones. Reasoning in full at
 [11](11-mid-event-changes.md#why-a-missing-rating-needs-no-fix).
 
-Completion ("submitted 3 of 4") is reported as its own field beside the score and
-is never subtracted from it.
+That is about the *ratee* who came up short. The *rater* who did not submit is a
+separate matter, handled next.
+
+## The composite engagement score
+
+Non-response is engagement data. A participant who is present, active, and
+declines to submit their evaluation is telling you something real about their
+engagement — and an engagement report that ignores it is incomplete.
+
+But it is a **different construct** from peer ratings, and summing them into one
+figure loses the ability to say which is low. So the engagement score is composite,
+with every component named and always visible:
+
+```
+engagement = w_peer · peer + w_participation · participation + w_recognition · recognition
+```
+
+All components on 0–100, weights set at event setup and summing to 1.
+
+| Component | Measures | From | Default weight |
+|---|---|---|---|
+| `peer` | What teammates observed about their contribution | Bias-adjusted scores, rescaled `(score − 1) / 4 × 100` | **50%** |
+| `participation` | Whether they did their part in the feedback loop | Submitted ÷ assigned, excused rounds excluded | **25%** |
+| `recognition` | Whether they stood out to teammates | Nomination index, `min(1, index / 2) × 100` | **25%** |
+
+The `recognition` mapping is frankly arbitrary — index 2.0 (named twice as often as
+chance) maps to 100. It is a defensible convention, not a derived truth, and it is
+in the template so you can change it. Say so when explaining the number.
+
+### What the report must show
+
+Never the composite alone. Always:
+
+> **Wei Ling — engagement 62**
+> peer 4.1 (n = 4) · participation **1 of 4** · nominations 2 (index 2.0)
+
+The composite is for scanning and sorting a 60-person list. The components are what
+make it actionable — *"rated highly by teammates, submitted one of four
+evaluations"* tells a coach something specific, where "62" does not.
+
+### Suppression rules
+
+These are enforced in code, not left to the facilitator:
+
+- **A composite is not computed when the `peer` component is below
+  `min_n_to_display`.** Show the available components with the peer part marked
+  *insufficient data*. A composite must never paper over a missing input.
+- **`participation` needs at least 2 assigned evaluations to enter the composite.**
+  Someone who joined for the final round has a denominator of 1, and "0 of 1"
+  becoming "0% participation" is not a finding. Below 2, show the raw count only.
+- **Excused rounds reduce the denominator**, they are not misses. A
+  facilitator-verified absence costs nothing.
+- **A skipped nomination is not a non-submission.** "No one in particular" is a
+  deliberate feature with an expected 10–20% use rate; penalising it would push
+  people into fabricating nominations.
+- **Partial submissions count as not submitted** — but are recorded distinctly,
+  because someone who opened the evaluation and abandoned it halfway is a different
+  story from someone who never opened it, and the facilitator should see which.
+
+### Never state a motive
+
+The data cannot distinguish a refusal from a dead battery, a phone with no signal,
+or a closed browser tab. These are identical in the record.
+
+So the report states the **observable fact** — *"did not submit"* — and never the
+inferred cause. No screen, export, or label in this system calls anyone a refuser.
+The facilitator, who was in the room, supplies the interpretation; the app supplies
+the count.
+
+To make that workable there is a one-tap **excuse** per person per round, with a
+reason (`technical` or `facilitator`), which removes that round from the
+participation denominator. Cheap enough to use in the moment, which is the only
+time anyone will.
+
+### Invisible to the participant
+
+Participants never see their engagement score, their participation rate, or any
+component of it. What they see is unchanged: their own nominations received
+(positive-only) and their currency balance. The penalty exists in the report, not
+on their phone.
 
 ## Precision weighting (v2)
 
@@ -254,7 +331,10 @@ Two further points on wording, both of which matter more than the algorithm:
 
 A short list, enforced in code rather than left to the facilitator's judgement:
 
-- No individual score with `n < 3`.
+- No individual score with `n < 3`, and no composite engagement score when its
+  `peer` component is below that threshold.
+- No stated reason for a non-submission. "Did not submit" is observable; "refused"
+  is a motive the data does not contain.
 - No cross-event comparison of individuals unless the same criteria, same
   template, and a connected rating graph across both.
 - No "bottom performer" ranking surfaced anywhere in the UI. The product forms

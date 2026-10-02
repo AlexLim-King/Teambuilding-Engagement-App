@@ -144,6 +144,8 @@ making 60 people invent passwords.
 | `round_id` | uuid fk | |
 | `rater_participant_id` | uuid fk | |
 | `ratee_participant_id` | uuid fk | |
+| `excused_at` | timestamptz null | Set when the facilitator excuses this round for this rater |
+| `excused_reason` | enum null | `technical` \| `facilitator`. Excused rounds leave the participation denominator entirely |
 | unique | `(round_id, rater_participant_id)` | Exactly one assignment per rater per round |
 
 Generated when the round's teams are formed, as a **derangement of each team** —
@@ -164,6 +166,7 @@ rates the same person twice across the event. See
 | `submitted_at` | timestamptz | **Device clock** — may be wrong, see below |
 | `received_at` | timestamptz | Server clock, set on ingest |
 | `client_seq` | int | Monotonic per device, for ordering when clocks lie |
+| `is_partial` | bool | Opened and abandoned, rather than never started. Counts as not submitted but is reported distinctly |
 | `ratee_withdrawn` | bool | Set on ingest if the ratee was withdrawn by the time this arrived. Flagged, never rejected — see [11](11-mid-event-changes.md#one-principle-this-makes-explicit) |
 | unique | `(round_id, rater_participant_id)` | Enforces R18 |
 

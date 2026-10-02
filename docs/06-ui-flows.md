@@ -194,8 +194,14 @@ it replaces a promise you cannot keep with a number you can plan around.
   "0 repeat evaluations" is the line that answers the question participants
   actually ask, so it is stated every round rather than assumed.
 - **Commit** publishes teams and rating assignments.
-- **Open evaluation** → live counter `41 / 48 submitted`, with names of who
-  hasn't, so the coach can nudge the room. Close manually or on a timer.
+- **Open evaluation** → live counter `41 / 48 submitted`, with names of who hasn't,
+  so the coach can nudge the room. Close manually or on a timer.
+- Each outstanding name carries a one-tap **Excuse** with `technical` /
+  `facilitator`, which removes that round from the person's participation
+  denominator. This is the only moment anyone will realistically use it, so it lives
+  on the chase list rather than buried in a settings screen. Everyone left
+  unexcused when the window closes is recorded as not having submitted — a fact, not
+  a verdict.
 
 **F-4 Live round — marking someone out.** Every participant row on the join board
 carries a **Mark as left** action, and withdrawn rows carry **Mark as returned**.
@@ -236,10 +242,17 @@ create redemption entries. See
 **F-5 Analytics.** Two distinct surfaces, because they have two different
 audiences and only one of them leaves the room:
 
-- *Facilitator view.* Per criterion: adjusted score, raw mean, n, and confidence
-  band — always together, never the adjusted score alone (see
-  [04](04-scoring-and-bias.md#final-reported-score)). Nomination index overall and
-  by trait tag. Team comparison. Coverage matrix.
+- *Facilitator view.* The engagement score with its components always on the same
+  row, never the composite alone:
+
+  > **Wei Ling — engagement 62**
+  > peer 4.1 (n = 4) · participation **1 of 4** · nominations 2 (index 2.0)
+
+  The composite is what makes a 60-person list scannable; the components are what
+  make a low one actionable. A row whose `peer` component is below `min_n` shows no
+  composite at all and cannot be sorted into a ranking. Also per criterion: adjusted
+  score, raw mean, n, confidence band. Nomination index overall and by trait tag.
+  Team comparison. Coverage matrix.
 - *Client export.* Team-level patterns, the per-round nomination highlights
   ("Round 2, *who did the work nobody else wanted* — named by 3: Farid"), and the
   `LEAD` / `WORK` / `SOCIAL` profile shape for people who stood out. **No

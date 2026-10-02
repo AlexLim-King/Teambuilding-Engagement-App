@@ -77,8 +77,10 @@ autocomplete miss, every sync retry.
 
 Two separate surfaces:
 
-- *Facilitator view* — adjusted scores with confidence bands and n, nomination
-  index overall and by trait tag, coverage matrix, team comparison.
+- *Facilitator view* — the composite engagement score with its components on the
+  same row, adjusted scores with confidence bands and n, nomination index overall
+  and by trait tag, coverage matrix, team comparison. Plus the one-tap excuse on the
+  chase list, which ships with M3 since it is used live.
 - *Client export* — team-level patterns and positive-only nomination highlights,
   with the caveat header from
   [07](07-risks-and-blind-spots.md#3-consequences-you-do-not-control). No

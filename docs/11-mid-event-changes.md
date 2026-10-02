@@ -84,42 +84,69 @@ equivalent and is not:
 So: **no imputation.** `n` drops to 3, the shrinkage handles it, and the displayed
 count stays truthful. This is a scope reduction, not an omission.
 
-## Non-completion: tracked, not subtracted
+## Two different kinds of not submitting
 
-Whether a participant completed their assigned evaluations is recorded as its own
-field, not folded into their score:
+These look identical in the database and must be treated as opposites:
+
+| | Excused | Non-response |
+|---|---|---|
+| Situation | Facilitator verified the person left, was unwell, or had a device failure | Present, active, and did not submit |
+| Facilitator action | Marks them left, or taps **Excuse** for that round | Nothing — it is simply recorded |
+| Effect on participation | Round leaves the denominator entirely. Costs nothing | Counts as a miss |
+| Effect on the report | None | Lowers the `participation` component |
+
+The whole point of the excuse mechanism is that illness and a flat battery never
+reach the engagement figure. What reaches it is someone who was there, could have
+submitted, and did not — which is genuine engagement data for an engagement report.
+
+**Excusing is one tap per person per round**, with a reason of `technical` or
+`facilitator`. It has to be that cheap, because the only moment anyone will do it is
+while the round is still live.
+
+## Non-response feeds the engagement score, not the peer score
+
+Non-response is **not** subtracted from someone's peer-rating score. It is its own
+named component of a composite engagement score:
 
 ```
-completion = evaluations submitted / evaluations assigned     e.g. "3 of 4"
+engagement = 50% peer · 25% participation · 25% recognition
 ```
 
-Shown beside the score on the facilitator view. Never subtracted from it.
+with the components always displayed beside the composite. Full specification in
+[04](04-scoring-and-bias.md#the-composite-engagement-score).
 
-The reason is that a peer-evaluation score claims to measure what teammates
-observed about someone's contribution. Mixing in a compliance figure makes the
-number mean something other than its label, and the most common cause of a missed
-evaluation is precisely the case you least want to penalise — someone who went
-home ill. That number can reach a coaching conversation.
+The reason for keeping them separate is interpretability rather than squeamishness.
+Subtracting non-response from the peer score produces one depressed number that
+could mean either thing. Keeping them apart lets the report say:
 
-**Where the consequence belongs instead:** the currency. It is explicitly an
-engagement tool, carries no measurement claim, and already rewards participation.
-A round you did not complete simply earns no participation payout.
+> *Rated highly by teammates on contribution and support. Submitted 1 of 4
+> evaluations.*
 
-### The setting, if you disagree
+Same penalty, and a coach can act on it.
 
-`reporting.completion_penalty` in the event template, **off by default**:
+### The app never states why
 
-```jsonc
-"reporting": {
-  "completion_penalty": null   // or e.g. { "per_missed": 0.2, "max": 0.5 }
-}
-```
+A refusal, a dead battery, no signal, and a closed browser tab are indistinguishable
+in the data. So every surface reports the observable fact — **"did not submit"** —
+and never an inferred motive. Nothing in this system labels a participant a refuser;
+the facilitator was in the room and supplies the interpretation.
 
-When set, a non-submitter's adjusted score is reduced by `per_missed` per missed
-evaluation, capped at `max`. The facilitator view labels any affected score
-*"includes completion penalty"* so the number is never silently different from
-what it claims to be. Off by default because of the reasoning above, but it is one
-setting away if you want it.
+### What does not count as non-response
+
+- **A skipped nomination.** "No one in particular" is a deliberate option with an
+  expected 10–20% use rate. Penalising it would push people into inventing
+  nominations, which is worse than a blank.
+- **An excused round**, as above.
+- **A round they were withdrawn for.**
+
+Partial submissions *do* count as not submitted, but are recorded distinctly —
+someone who opened the evaluation and abandoned it is a different story from someone
+who never opened it, and the facilitator view shows which.
+
+### Invisible to the participant
+
+No participant sees their engagement score, participation rate, or any component.
+Their phone shows what it always showed: nominations received, and their balance.
 
 ## Currency
 
@@ -184,6 +211,12 @@ to every late-arriving write in the system, not just this one.
 - A team falling below `min_size` gains exactly one member, from the largest team.
 - Withdrawing during an open evaluation leaves submitted ratings untouched and
   creates no orphaned assignment.
+- An excused round is removed from the participation denominator, not counted as a
+  miss.
+- A skipped nomination does not reduce participation.
+- Participation with fewer than 2 assigned evaluations is reported as a raw count
+  and does not enter the composite.
+- No surface anywhere renders a motive for a non-submission.
 - Withdraw → return preserves `pair_history` and `rating_history`; the returning
   participant is never assigned a ratee they already rated.
 - A rating submitted offline for a since-withdrawn ratee is accepted and flagged,

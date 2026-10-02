@@ -50,6 +50,9 @@ with 4 minutes to get started.
 - **F12** When someone falls ill or has to leave, I mark them inactive on my own
   device and the next round forms without them — and I can mark them back in when
   they return.
+- **F13** When someone's phone dies or they genuinely couldn't submit, I excuse that
+  round for them in one tap so it never counts against their engagement. Anyone who
+  was present and simply didn't submit is counted, and I can see who.
 
 ### Participant
 
@@ -129,8 +132,15 @@ with 4 minutes to get started.
 - **R19** Raw mean, bias-adjusted score, and a confidence indicator per person
   per criterion. Missing ratings are never imputed — `n` drops and shrinkage
   absorbs it.
-- **R19b** Evaluation completion ("3 of 4") is reported as its own field beside the
-  score, never folded into it. Full method in [04](04-scoring-and-bias.md).
+- **R19b** Composite engagement score — `peer`, `participation` and `recognition`
+  components, weighted at event setup, with every component always displayed beside
+  the composite. Never the composite alone.
+- **R19c** No composite is computed when its `peer` component is below
+  `min_n_to_display`; `participation` requires ≥2 assigned evaluations to enter it.
+- **R19d** One-tap excuse per person per round (`technical` / `facilitator`) removing
+  that round from the participation denominator.
+- **R19e** No surface states a reason for a non-submission. "Did not submit" only.
+- **R19f** Participants never see their engagement score or any component of it. Full method in [04](04-scoring-and-bias.md).
 - **R20** Nomination index normalised by rounds played, aggregated overall and by
   trait tag (`LEAD` / `WORK` / `SOCIAL`). Per-question results shown as named
   highlights, never as scores.

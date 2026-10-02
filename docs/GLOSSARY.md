@@ -84,7 +84,12 @@ team lists against your own judgement before anything is dressed up.
 | **Halo effect** | One overall impression bleeding into all three criteria, so they measure the same thing. |
 | **Connected rating graph** | Enough overlap in who-rated-whom that everyone's scores are on the same scale. If the room split into two groups that never rated across, their numbers aren't comparable — the app checks for this. |
 | **Imputation** | Filling a missing value with an estimate, usually the average. Deliberately *not* used here — it would report that 4 people rated someone when only 3 did. Shrinkage does the same job honestly. |
-| **Completion** | How many of their assigned evaluations someone actually submitted ("3 of 4"). Reported next to the score, never subtracted from it. |
+| **Composite engagement score** | One number combining three named parts — peer ratings (50%), participation (25%) and recognition (25%). The parts are always shown next to it, so you can see which one is low. |
+| **Participation component** | How many of their assigned evaluations someone submitted, as a share. Excused rounds don't count against them. |
+| **Recognition component** | How often someone was nominated, relative to chance. |
+| **Excused** | A facilitator marking a round as not counting against someone — flat battery, no signal, sent home. One tap, removes that round from their denominator. |
+| **Non-response** | Present, active, didn't submit. Counted. Distinct from excused, which isn't. |
+| **Suppression** | Refusing to show a number the data can't support. No composite when the peer part is thin, and a suppressed row can't be sorted into a ranking. |
 | **Pull-only** | The participant's phone asks the server for a value when needed, rather than holding its own copy. How balances work, so no phone ever shows an authoritative-looking stale number. |
 | **Withdrawn / returned** | A participant marked as having left, and marked back in. Reversible, and returning keeps their history so it is not a loophole around the no-repeat rules. |
 | **Property test** | A test asserting a rule always holds ("no one is ever assigned to rate the same person twice") across thousands of random cases, rather than checking one example. |

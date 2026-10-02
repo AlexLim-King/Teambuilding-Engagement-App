@@ -23,7 +23,9 @@
 | Currency source of truth | **Server, read through the facilitator's connected device.** Participants pull their balance on demand | No authoritative balance ever lives on a participant device, so there is no offline currency logic and no stale-balance trap. |
 | Mid-event withdrawal | **One tap on the facilitator device**, reversible; next round forms without them | Safe offline — a status change is facilitator-owned and additive. See [11](11-mid-event-changes.md). |
 | Missing ratings | **Never imputed.** `n` simply drops and shrinkage absorbs it | Imputing an average would report a false `n` and compress real differences. Scope reduction, not an omission. |
-| Non-completion | **Tracked as its own field, not subtracted from the score.** The consequence lands on currency instead | A score that mixes in compliance no longer means what its label says, and the usual cause of a missed evaluation is illness. Overridable via `reporting.completion_penalty`, off by default. |
+| Non-response | **A named component of a composite engagement score** (50% peer · 25% participation · 25% recognition), never subtracted from the peer score | Someone present and declining to submit is real engagement data. Keeping it a separate component means the report can say which part is low. See [04](04-scoring-and-bias.md#the-composite-engagement-score). |
+| Excused absences | **One tap per person per round**, reason `technical` or `facilitator`; removes that round from the participation denominator | Illness and dead batteries never reach the engagement figure. Only "present and did not submit" does. |
+| Stating a motive | **Never.** Every surface says "did not submit", never "refused" | A refusal and a flat battery are identical in the data. The facilitator was in the room; the app supplies the count, not the interpretation. |
 | Departed members and awards | **Always included** if they were on the team when the round started | Avoids penalising illness; the amounts are not worth adjudicating. |
 
 ## The trade you just made: balance first
@@ -122,5 +124,13 @@ The rules baked into the spec:
    transactions and is the operative regime for Malaysian events; Singapore's
    PDPA if you run there.
 
-7. **Hosting budget.** Roughly US$0–25/month at this scale on Fly.io or Supabase.
+7. **Who receives the engagement report?** The reporting decision above keeps
+   per-person scores on the facilitator's screen and gives the client aggregates
+   plus positive-only highlights. The composite engagement score is currently
+   specced as a *facilitator-view* artifact on that basis. If "engagement report"
+   means a client deliverable containing per-person engagement scores, say so — it
+   is a different decision from the one already made, and it changes the consent
+   wording participants are shown at join.
+
+8. **Hosting budget.** Roughly US$0–25/month at this scale on Fly.io or Supabase.
    Confirm that is acceptable versus a fully local mode.

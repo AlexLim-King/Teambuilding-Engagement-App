@@ -198,23 +198,29 @@ two cheap safeguards:
 The second point is only possible because the two systems are separate. It is a
 real argument for having kept them apart.
 
-## 6f. The temptation to penalise non-participation in the score
+## 6f. Non-response is signal, and also a trap
 
-Worth recording because the pressure to do this will recur, from clients as well as
-from the inside: someone does not complete their evaluations, so dock their score.
+Counting non-response is right for an engagement report: someone present, active,
+and declining to submit is telling you something real. Two traps come with it.
 
-It is the wrong lever, for a reason that is easy to state and easy to forget. The
-score claims to measure what teammates observed about a person's contribution.
-Subtract a compliance figure and it measures that *plus* app usage, while still
-carrying the old label — and the most common cause of a missed evaluation is the
-one case you least want to penalise, someone who went home ill. That number can
-end up in a coaching conversation.
+**The first is attribution.** A refusal, a dead battery, no signal, and a closed tab
+are indistinguishable in the data. The design answer is the one-tap excuse, plus an
+absolute rule that no surface ever states a motive — *"did not submit"* is
+observable, *"refused"* is a guess about a person that could follow them into a
+performance conversation. The facilitator was in the room and supplies the
+interpretation.
 
-Completion is tracked as its own field beside the score, and the consequence lands
-on the currency, which is an engagement tool and makes no measurement claim. The
-override exists (`reporting.completion_penalty`, off by default) and labels any
-affected score so it is never silently different from what it claims to be. See
-[11](11-mid-event-changes.md#non-completion-tracked-not-subtracted).
+The residual risk is the excuse going unused. It is one tap on the chase list for
+exactly this reason, but a busy facilitator will miss some, and a quiet participant
+with a flat battery will occasionally be counted as disengaged. Worth knowing when
+reading a single low participation figure, and worth saying to a client.
+
+**The second is that a composite invites being read alone.** "Engagement 41" will
+get acted on before anyone reads the breakdown. This is why the components are
+rendered on the same row rather than behind a tap, why no composite exists when its
+peer component is thin, and why a suppressed row cannot be sorted into a ranking.
+Those are structural guards, not guidelines — the pressure to just sort by the one
+number is constant.
 
 ## 7. Legal and regulatory
 
