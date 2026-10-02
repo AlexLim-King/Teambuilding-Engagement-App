@@ -9,10 +9,12 @@ some people always score high and some always score low.
 Two interfaces, one codebase:
 
 - **Facilitator** — import a namelist, configure the event, form teams, trigger
-  evaluations, watch live completion, read the analytics, export results.
+  evaluations, record who won, award currency, watch live completion, read the
+  analytics, export results.
 - **Participant** — type the first few letters of your name, see your team
   number, and when the coach triggers it, rate one teammate on three criteria plus
-  answer one nomination question, which changes every round.
+  answer one nomination question, which changes every round. Check your currency
+  balance and how you earned it.
 
 ## Status
 
@@ -32,6 +34,7 @@ architecture only — no application code yet. Read the docs in order:
 | 07 | [Risks & blind spots](docs/07-risks-and-blind-spots.md) | Where this design can mislead you, and what to do about it |
 | 08 | [Roadmap](docs/08-roadmap.md) | Build order and milestones |
 | 09 | [Question bank](docs/09-question-bank.md) | The rotating nomination questions and why they rotate |
+| 10 | [Results & currency](docs/10-currency.md) | Recording wins, the earnings ledger, and cashing out at the counter |
 
 Start with **00-decisions.md** — it lists the questions that still need your
 answer before code is worth writing.

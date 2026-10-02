@@ -87,6 +87,25 @@ team lists against your own judgement before anything is dressed up.
 
 ---
 
+## Currency
+
+| Term | Means |
+|---|---|
+| **Programme** | A multi-day engagement — several events for the same cohort. Balances live here, so they survive to day 2. A one-day event has no programme. |
+| **Ledger** | A list of every earning and every cash-out, in order, never edited. Like a bank statement rather than a balance on a sticky note. |
+| **Append-only** | Entries are added, never changed or deleted. A mistake is fixed by adding a correcting entry, so the history always tells the truth about what happened. |
+| **Derived balance** | The balance isn't stored anywhere — it's added up from the ledger whenever needed. Means there's no saved number that can drift out of step with reality. |
+| **Reversal** | The correcting entry that undoes an earlier one. "Undo" in the interface; an extra line in the ledger underneath. |
+| **Batch** | All the entries created by one action. Awarding 50 each to a six-person team is six entries in one batch, so undoing it is one tap, not six. |
+| **Per-member amount** | You enter what each person gets, not a pot to divide. Enter 50 for a team and everyone on it gets 50, whether it's four people or seven. |
+| **Compare-and-set** | Before zeroing a balance, the app checks the balance is still what it thought. Stops a double tap or a retried request from overdrawing someone. |
+| **Idempotency key** | A unique id on each entry, so the same request arriving twice is recognised and ignored. What makes patchy wifi harmless. |
+| **Single designated writer** | Only one device can run redemption during a window. Since cashing out happens at one counter, this costs nothing and removes the only dangerous race in the system. |
+| **Integer units** | Currency is whole numbers only, never decimals. Decimals in money code eventually produce 49.99999999. |
+| **Spot award / adjustment** | A facilitator giving an individual an amount outside the normal team payout — for helping pack up, or to fix an error. |
+
+---
+
 ## Data and legal
 
 | Term | Means |
@@ -96,7 +115,7 @@ team lists against your own judgement before anything is dressed up.
 | **Data controller / processor** | Controller decides why data is collected (proposed: the client company). Processor handles it on their behalf (you). Determines who carries which legal duty. |
 | **PII** | Personally Identifiable Information — anything that identifies a real person. Names, NRICs, emails. |
 | **Device token** | A random code the phone generates to identify itself. Replaces participant logins entirely. |
-| **Retention** | How long data is kept before deletion. Proposed: 90 days, then aggregates only. |
+| **Retention** | How long data is kept before deletion. Proposed: 90 days, then aggregates only. Currency ledgers die with their programme. |
 
 ---
 

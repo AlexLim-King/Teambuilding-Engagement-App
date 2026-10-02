@@ -15,6 +15,11 @@
 | Gender spread pattern | **Even spread across teams, solos accepted** | 1 per team wherever the ratio allows — matches current practice. |
 | Objective priority | **Balance first**: gender balance > department mix > novel pairings > even sizes | Every team reads as well-mixed each round. Costs coverage — see the trade-off note below. |
 | Individual reporting | **Facilitator only.** Client receives team-level patterns plus a positive-only "names that stood out" list | Keeps the talent-spotting value without handing over a numeric league table built on n = 4. |
+| Currency | **Separate from peer evaluation entirely.** Earned from live activity results, awarded by the facilitator as a per-member amount | Nothing anyone says about a teammate pays out, so nominations never become deals. See [10](10-currency.md). |
+| Currency storage | **Append-only integer ledger**, balance always derived | The first mutable, contested state in the system; it does not get the same treatment as immutable ratings. |
+| Redemption | Facilitator hands over **physical currency** at a counter and taps Redeemed, zeroing the balance | No in-app shop, no catalogue, no stock. One designated device per redemption window. |
+| Balance lifetime | **Persists across a multi-day programme**, dies with the programme | Introduces a `programme` entity above `event`. |
+| Balance visibility | **Own balance and own earning history only** | No leaderboard; no participant device holds anyone else's financial state. |
 
 ## The trade you just made: balance first
 
@@ -75,34 +80,42 @@ The rules baked into the spec:
   how someone identifies. The facilitator override exists for that, and gender is
   never displayed to peers anywhere in the app.
 
-## Open questions — still blocking the build
+## Open questions, and one settled consequence
 
 1. **Event shape.** Typical headcount? Rounds per event (2? 4? 8?)? Team size
    (4? 5? 6?)? These set the statistical power of every number the app reports,
-   and they determine whether individual scores are reportable at all.
+   and they determine whether individual scores are reportable at all. **Still the
+   single thing blocking the first build.**
 
-2. **One-off or longitudinal?** Is a person tracked across multiple events over
-   months, or does every event start clean? Longitudinal needs stable person
-   identity, consent for retention, and changes the data model. Standalone is far
-   simpler and far safer.
+2. **Longitudinal tracking of *scores*.** Balances now persist across a programme
+   ([10](10-currency.md)), which settles identity *within* a programme. Still open:
+   whether peer-evaluation scores follow a person across separate programmes over
+   months. That is the part needing consent and retention work; the currency does
+   not depend on it.
 
-3. **Do participants see anything about themselves?** Recommendation: no scores,
+3. **Re-join on day 2 is name-pick-only, by your decision.** Accepted, with the
+   consequence handled rather than prevented: the realistic failure is picking the
+   wrong "John Lim" and cashing out their balance, so every redemption is
+   reversible in one tap and the name picker always shows department. See
+   [10](10-currency.md#if-the-wrong-person-is-cashed-out).
+
+4. **Do participants see anything about themselves?** Recommendation: no scores,
    but *do* show nominations received ("2 teammates picked you for 'kept everyone
    included'"). Positive-only, safe, and it is the single cheapest thing that
    makes participants glad they used the app.
 
-4. **Final criteria wording.** Deferred by you, correctly. The constraint to
+5. **Final criteria wording.** Deferred by you, correctly. The constraint to
    remember when you choose: three criteria that measure genuinely different
    things, not one construct three times. Candidates in
    [04](04-scoring-and-bias.md#choosing-criteria-that-are-actually-different),
    oriented toward the "potential leaders and outstanding workers" lens your
    clients want.
 
-5. **Data protection posture.** Who is the data controller — you, or the client
+6. **Data protection posture.** Who is the data controller — you, or the client
    company? Default in this spec: client is controller, you are processor, 90-day
    retention, then aggregate-only. Malaysia's PDPA 2010 applies to commercial
    transactions and is the operative regime for Malaysian events; Singapore's
    PDPA if you run there.
 
-6. **Hosting budget.** Roughly US$0–25/month at this scale on Fly.io or Supabase.
+7. **Hosting budget.** Roughly US$0–25/month at this scale on Fly.io or Supabase.
    Confirm that is acceptable versus a fully local mode.

@@ -78,6 +78,14 @@ fits without scrolling.
                              ▼
                         P-7 Done
                         "Thanks — saved."
+                        + balance, if currency is on
+                        ┌──────────────┐
+                        │  YOUR BANK   │
+                        │     120      │  ← 56 px
+                        │    coins     │
+                        │ Round 3  +50 │
+                        │ Round 2  +40 │
+                        └──────────────┘
                         (sync state shown discreetly)
 ```
 
@@ -112,7 +120,13 @@ It's used to give the group feedback, not to rank anyone."* (R-P8). This is both
 an ethical obligation and a data-quality measure — people rate more honestly when
 they know the rules.
 
-**P-7 Done.** Sync state is shown, quietly: "Saved · will send when you're back
+**P-7 Done — and the balance.** Where currency is enabled, this screen carries the
+participant's own balance and the list of how it was earned. The history is not
+decoration: "+50 — Team 3, 1st place, Blindfold Maze" is the engagement payload,
+and it is the cheapest possible dispute resolution when someone thinks they are
+short at the counter. Own balance only — no leaderboard, nobody else's number.
+
+Sync state is shown, quietly: "Saved · will send when you're back
 online." Never a blocking spinner, never an error the participant has to act on.
 Sync is the app's problem, not theirs.
 
@@ -123,7 +137,12 @@ Sync is the app's problem, not theirs.
                        roster import        team size, count      join board          scores
                        criteria template    coverage forecast     form / review       nominations
                        leadership flags     seed                  commit              coverage
-                                                                  open evaluation     export
+                       gender tagging       payout preset         open evaluation     export
+                                                                  record result
+                                                                  award currency
+                                                                        │
+                                                                        ▼
+                                                                  F-6 Redemption counter
 ```
 
 **F-2 Event setup — roster import.** Drag a CSV or XLSX in. The importer must
@@ -170,6 +189,33 @@ it replaces a promise you cannot keep with a number you can plan around.
 - **Commit** publishes teams and rating assignments.
 - **Open evaluation** → live counter `41 / 48 submitted`, with names of who
   hasn't, so the coach can nudge the room. Close manually or on a timer.
+
+**F-6 Redemption counter.** Opened at a fixed time, on one designated device. A
+searchable list of everyone with a balance, largest first, with the participant's
+department shown beside each name — because the person in front of you may be one
+of two John Lims and that is the moment it matters.
+
+```
+┌─────────────────────────────────────┐
+│ Redemption · open · this device      │
+│ ┌─────────────────────────────────┐ │
+│ │ 🔍 joh                           │ │
+│ └─────────────────────────────────┘ │
+│  John Lim · Operations      120  →  │
+│  John Lim · Sales            80  →  │
+│                                     │
+│  Last: Alina Tan · 140 · [ Undo ]   │
+└─────────────────────────────────────┘
+```
+
+Tapping a row shows the balance large, with a single **Redeemed** button that
+zeroes it. The most recent redemption stays on screen with an **Undo** — the
+mis-redemption is caught seconds after it happens or not at all, so the undo
+belongs in front of the facilitator, not buried in a history screen.
+
+Other facilitator devices show "redemption is open on another device" and cannot
+create redemption entries. See
+[10](10-currency.md#offline-at-the-counter) for why.
 
 **F-5 Analytics.** Two distinct surfaces, because they have two different
 audiences and only one of them leaves the room:

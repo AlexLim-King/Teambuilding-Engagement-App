@@ -35,6 +35,13 @@ with 4 minutes to get started.
 - **F7** I trigger the evaluation prompt at the end of an activity; all
   participants' phones show the evaluation immediately (or on next sync).
 - **F8** I see live completion ("41 of 48 submitted") and can close the round.
+- **F8b** I record which team won an activity — placing, raw score, or neither —
+  and award currency to each member of each team as a per-member amount, so uneven
+  team sizes need no arithmetic from me.
+- **F8c** I undo a whole award in one tap when I pick the wrong team.
+- **F8d** At a fixed time I open a redemption window, hand a participant physical
+  currency at the counter, and tap once to zero their balance — and I can undo
+  that if I zeroed the wrong person.
 - **F9** I see analytics: per-person adjusted scores, per-team scores, nomination
   counts, mixing coverage ("every participant has now worked with 71% of the
   room").
@@ -54,6 +61,8 @@ with 4 minutes to get started.
 - **P7** My submission is saved even with no signal, and syncs later without me
   doing anything.
 - **P8** I am told, before I rate anyone, who can see my answers.
+- **P9** I see my own currency balance and exactly how I earned it, so I know what
+  I am owed before I reach the counter. I never see anyone else's.
 
 ## Functional requirements
 
@@ -123,6 +132,15 @@ with 4 minutes to get started.
 - **R23** Every reported number carries an *n* and is suppressed below a
   configurable minimum (default n < 3 shows "insufficient data", never a score).
 
+### Results and currency
+
+Specified in full in [10](10-currency.md), requirements **C1–C12**. The headlines:
+results and awards are separate actions; the award amount is per member rather
+than a pot; balances are derived from an append-only integer ledger and never
+stored as an authoritative number; every action is reversible; redemption uses a
+compare-and-set and is restricted to one device per window; balances persist for
+the life of a programme.
+
 ## Non-functional requirements
 
 | # | Requirement | Target |
@@ -143,6 +161,9 @@ with 4 minutes to get started.
 - Native Wear OS / watchOS app
 - Real-time chat or messaging between participants
 - Photo or video capture
-- Cross-event longitudinal tracking of individuals (see open question 3)
+- Cross-*programme* longitudinal tracking of individuals (within a programme is
+  supported, because balances require it)
+- Any in-app shop, catalogue, stock tracking or auction — currency leaves the app
+  as physical money at the counter
 - Client-facing self-serve portal
 - Multi-language UI (design for it; ship English)

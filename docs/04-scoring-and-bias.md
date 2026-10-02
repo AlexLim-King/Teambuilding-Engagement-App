@@ -218,7 +218,7 @@ something the others do not:
 | `direction` | "Helped the team decide what to do" | Emergent leadership | Leadership potential |
 
 These are a starting point, not a decision — final wording is still open
-([00](00-decisions.md), question 4). The constraint to hold on to is that the
+([00](00-decisions.md), question 5). The constraint to hold on to is that the
 three must measure different things; two near-synonyms cost you a third of your
 data.
 
@@ -245,7 +245,7 @@ A short list, enforced in code rather than left to the facilitator's judgement:
   teams and celebrates contribution; the moment it produces a defensible-looking
   list of the worst people at a company party, you own a liability, not a
   feature.
-- No score shown to participants at v1 (see [00](00-decisions.md), question 3) —
+- No score shown to participants at v1 (see [00](00-decisions.md), question 4) —
   nominations received are positive-only and safe to show.
 - **No per-person scores in the client deliverable at all.** The client receives
   team-level patterns and a positive-only highlights list built from nominations.

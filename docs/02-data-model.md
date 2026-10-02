@@ -10,7 +10,12 @@
 3. **Scores are derived, never stored as truth.** Adjusted scores are computed
    from raw ratings on demand. If the bias model changes, historical events
    recompute — no migration, no stale numbers.
-4. **PII is minimised on participant devices.** Devices cache names and
+4. **Currency is the exception to principle 1, and is specified separately.** A
+   balance is mutable, contested, and worth something, so it gets an append-only
+   integer ledger, compare-and-set on redemption, and a single-writer rule — none
+   of which the rest of the system needs. See
+   [10](10-currency.md#why-this-is-the-first-genuinely-dangerous-data-in-the-system).
+5. **PII is minimised on participant devices.** Devices cache names and
    departments (needed for autocomplete offline); they never receive emails,
    employee references, or anyone's ratings.
 
@@ -20,7 +25,9 @@
 Organisation
   └── Roster ──── RosterPerson
   └── EventTemplate (criteria, nomination questions, weights)
-  └── Event
+  └── Programme                       (multi-day; owns the currency)
+        ├── ProgrammeParticipant ──── CurrencyLedger (append-only)
+        └── Event
         ├── Participant        (a RosterPerson claimed on a device)
         ├── Round
         │     ├── Team ──── TeamMember
@@ -28,8 +35,13 @@ Organisation
         │     └── Submission
         │           ├── CriterionRating (×3)
         │           └── Nomination      (×0..n)
+        │     └── RoundResult   (placing / score per team)
         └── PairHistory        (co-occurrence counts, derived + cached)
 ```
+
+`Programme` sits above `Event` because a balance outlives a single day while teams
+and rounds do not. A standalone one-day event has `programme_id = null` and its
+balances die with it. Full currency schema in [10](10-currency.md#entities).
 
 ## Tables
 
@@ -74,6 +86,7 @@ later need "1 director and at most 2 managers per team," this becomes a
 |---|---|---|
 | `id` | uuid pk | |
 | `organisation_id` | uuid fk | |
+| `programme_id` | uuid fk null | Set for multi-day programmes; null for standalone events |
 | `template_id` | uuid fk | |
 | `join_code` | text unique | 6 chars, ambiguity-free alphabet (no O/0/I/1) |
 | `starts_at`, `ends_at` | timestamptz | |
@@ -86,6 +99,7 @@ later need "1 director and at most 2 managers per team," this becomes a
 | `id` | uuid pk | |
 | `event_id` | uuid fk | |
 | `roster_person_id` | uuid fk null | Null for walk-ins (R5) |
+| `programme_participant_id` | uuid fk null | Links this day's participant to their standing identity and bank |
 | `display_name` | text | Denormalised — walk-ins have no roster row |
 | `department` | text null | |
 | `is_leadership` | bool | |
@@ -265,6 +279,9 @@ server-side autocomplete, at the cost of R4.
 
 - On `event.closed + retention_days`: delete `submission`, `criterion_rating`,
   `nomination`, `rating_assignment`, `participant.device_token`.
+- On `programme.ended + retention_days`: delete `currency_ledger` and
+  `programme_participant`. Keep per-programme totals with no identifiers — a
+  spent balance has no reason to outlive the programme that created it.
 - Keep aggregate per-event statistics with no individual identifiers.
 - A participant may request their own data; the facilitator screen has a
   per-person export for this. What they receive is *ratings they gave*, plus

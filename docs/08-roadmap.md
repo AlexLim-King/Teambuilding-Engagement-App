@@ -16,8 +16,12 @@ team size to answer it for.
 
 `packages/core` only: team formation (with gender/department/novelty weighting),
 the derangement-based rating assignment, the bias model, nomination statistics,
-and CSV/NRIC import. No UI. Delivered with:
+CSV/NRIC import, and the **currency ledger arithmetic** (balance from entries,
+reversal logic, integer-only guarantees). No UI. Delivered with:
 
+- The ledger property tests from [10](10-currency.md#test-plan) — balance always
+  equals the sum of its entries, a redemption replayed 100 times never goes
+  negative, no float ever touches a currency value.
 - The property tests listed in [03](03-team-formation.md#test-plan-for-this-module),
   including the one your requirement turns into: **zero repeat rater→ratee pairs
   across 1,000 simulated 8-round events**.
@@ -39,12 +43,29 @@ Ugly, but it lets you run the participant flow with 8 colleagues in a room and
 find out in an afternoon whether 30 seconds is realistic and whether the
 autocomplete works under pressure.
 
+## M2b — Results and currency
+
+Folded into M3 rather than given its own milestone, because it needs the server
+from day one: unlike ratings, a balance cannot be trusted from a client. What
+lands with M3:
+
+- Record result per team (placing / score / neither).
+- Award per-member amounts with a saved payout preset; undo a whole batch.
+- The append-only ledger, server-authoritative, integers only.
+- Redemption counter with compare-and-set, single designated device, and undo.
+- Participant balance screen with earning history.
+- `programme` grouping so balances survive to day 2.
+
+The ledger arithmetic itself ships in M1 as pure functions with the property tests
+from [10](10-currency.md#test-plan) — it is the kind of code that must be right
+before anyone can see it, and it is testable with no server at all.
+
 ## M3 — Facilitator interface + server + sync
 
 Roster import with the mapping preview, event and round management, formation
 proposal with override, live join and submission counters, the sync protocol from
-[05](05-architecture.md#the-offline-model), and the facilitator team display
-board. This is the first version that can run a real event.
+[05](05-architecture.md#the-offline-model), the facilitator team display board, and
+everything in M2b. This is the first version that can run a real event.
 
 **Gate: a pilot event with a friendly client, at your cost.** Expect the first
 five minutes to be rough and instrument accordingly — log every join, every
@@ -72,17 +93,22 @@ error reporting.
 
 ## Later, in rough priority order
 
-1. **Precision weighting** of raters ([04](04-scoring-and-bias.md#precision-weighting-v2)) — once you have real data to validate against.
-2. **Local hub mode** ([05](05-architecture.md)) — if, and only if, a real event fails without it.
-3. **Post-event client report** — the polished PDF an L&D buyer actually wants.
-4. **Ordinal (ordered-logit) scoring model** — if ceiling effects prove severe.
-5. **Cross-event longitudinal tracking** — needs the consent and identity work from [00](00-decisions.md) question 3.
-6. **Multi-language UI** — the strings are externalised from M2 onward, so this stays cheap.
-7. **Wear OS port** — see [07](07-risks-and-blind-spots.md#if-the-watch-is-non-negotiable).
+1. **The win-vs-ratings validity check** ([10](10-currency.md#an-unexpected-benefit-this-is-your-first-validity-check)) — log it from the first pilot, read it after a dozen events. It is the only external evidence this app measures anything real, and it costs nothing to collect.
+2. **Precision weighting** of raters ([04](04-scoring-and-bias.md#precision-weighting-v2)) — once you have real data to validate against.
+3. **Local hub mode** ([05](05-architecture.md)) — if, and only if, a real event fails without it.
+4. **Post-event client report** — the polished PDF an L&D buyer actually wants.
+5. **Ordinal (ordered-logit) scoring model** — if ceiling effects prove severe.
+6. **Cross-programme longitudinal tracking** — needs the consent and identity work from [00](00-decisions.md) question 2.
+7. **Multi-language UI** — the strings are externalised from M2 onward, so this stays cheap.
+8. **Wear OS port** — see [07](07-risks-and-blind-spots.md#if-the-watch-is-non-negotiable).
 
 ## What is deliberately not on this list
 
 - A client self-serve portal. Sell the report before building the portal.
+- An in-app shop, catalogue, stock tracking, or auction. Currency leaves the app as
+  physical money at the counter; the on-site reward system is yours to run.
+- Transferring currency between participants. It makes the ledger a payment
+  network and raises questions worth avoiding.
 - Any individual ranking or "bottom performer" view, ever.
 - Realtime chat, photos, gamification, leaderboards. Each is a request you will
   receive and each dilutes the one thing this product does that others do not:

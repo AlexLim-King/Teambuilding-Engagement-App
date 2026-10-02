@@ -52,6 +52,26 @@ Properties this gives:
   the same row. The only genuinely mutable state — team assignments — is written
   by the facilitator alone, so a plain server-authoritative version number
   suffices.
+
+### Where currency breaks this, and what it gets instead
+
+Currency is the one subsystem the above does **not** cover, because a balance is
+mutable and contested rather than an immutable fact. It is specified in full in
+[10](10-currency.md); the architectural consequences are:
+
+| | Ratings | Currency |
+|---|---|---|
+| Shape | Immutable facts | Append-only ledger, balance derived |
+| Offline writes | Always safe | **Awards** safe (additive); **redemptions** are not |
+| Conflict model | None possible | Compare-and-set on redemption + single designated writer per window |
+| Correction | N/A — never changes | Compensating `reversal` entry, never an edit |
+| Numeric type | smallint 1–5 | **Integer units only** — no float ever touches currency |
+
+The single-writer rule is the load-bearing one: redemption is restricted to one
+designated counter device per window, so two disconnected devices cannot both take
+the same person to zero. It costs nothing operationally — cashing out happens at
+one physical counter — and it removes the only genuinely dangerous race in the
+system.
 - **Clock independence.** Ordering uses `(client_seq, received_at)`, never the
   device clock (see [02](02-data-model.md#submission)).
 
@@ -89,6 +109,14 @@ Three mitigations, in order of cost:
 All participant endpoints take `Authorization: Bearer <device_token>`.
 
 ```http
+GET  /me/balance
+  →  { balance, currencyLabel, entries: [ { amount, reason, createdAt } ] }
+```
+
+Returns only the caller's own balance and history — there is no endpoint that
+returns another participant's financial state to a participant device.
+
+```http
 POST /events/{joinCode}/claim
      { deviceToken, rosterPersonId | walkInName }
   →  { participantId, event, template, roster[], currentRound }
@@ -121,6 +149,11 @@ teams before they go live") and R6 (manual override) possible.
 
 ## Where the algorithms run
 
+Currency is the exception to the "runs on the device" rule below: balances are
+**always computed server-side** from the ledger and never trusted from a client. A
+device shows a cached balance for responsiveness, clearly marked as of its last
+sync, but the number that governs a redemption comes from the server.
+
 Team formation and score adjustment both run **on the facilitator's device**, in
 TypeScript, as pure functions over plain data. Reasons:
 
@@ -141,6 +174,7 @@ packages/
     formation/
     scoring/
     roster/
+    ledger/        # balance arithmetic, reversal logic — integers only
   web/             # React PWA — both interfaces, code-split by role
     participant/
     facilitator/
@@ -167,7 +201,10 @@ subtle bugs.
 - Rate limiting on `/claim` to stop someone enumerating the roster by brute-force
   join codes. Join codes are 6 characters from a 32-symbol alphabet
   (~10⁹ combinations) and are only valid while an event is open.
-- No participant endpoint ever returns another participant's ratings.
+- No participant endpoint ever returns another participant's ratings or balance.
+- Only an authenticated facilitator can create any `currency_ledger` entry. A
+  device token cannot award, adjust, or redeem — a participant's phone is a
+  read-only view of its own balance.
 - Transport is HTTPS only; the service worker requires a secure context anyway.
 - Roster caching on devices is a deliberate, documented trade — see
   [02](02-data-model.md#what-lives-on-the-participant-device).

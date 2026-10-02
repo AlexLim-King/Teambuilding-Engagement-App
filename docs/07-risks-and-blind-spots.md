@@ -146,6 +146,58 @@ novelty-first; and the round planner's coverage forecast tells you before the
 event whether the configuration will hold up, so a longer day gets larger teams
 rather than more repeats.
 
+## 6d. Currency makes every bug visible and personal
+
+A wrong adjusted score is invisible — nobody can check it. A wrong balance is
+discovered immediately, by the person it belongs to, standing at a counter in
+front of their colleagues, with physical money changing hands. Currency converts
+quiet software faults into public incidents.
+
+The design answers this with structure rather than care: an append-only ledger so
+no number can drift from its history, integer arithmetic so nothing rounds,
+compare-and-set so a double tap cannot overdraw, a single counter device so two
+facilitators cannot race, and reversibility on every action so any mistake is one
+tap to fix. Specified in [10](10-currency.md).
+
+Two residual risks worth naming:
+
+- **Mis-selection at the counter.** Two people with the same name, wrong balance
+  zeroed. Mitigated by department shown in the picker and a prominent Undo, not
+  prevented — see
+  [10](10-currency.md#if-the-wrong-person-is-cashed-out). This was an informed
+  choice to keep the queue moving.
+- **Participants trusting a stale cached balance.** A phone offline since the
+  morning shows a number that may be short. The screen must carry an "as of" line,
+  and the server number is what governs the counter. Never let a participant
+  believe a cached figure is authoritative.
+
+## 6e. Currency can crowd out the thing it is meant to encourage
+
+Worth flagging because it is the counter-intuitive one, and because it is well
+established in motivation research: attaching extrinsic rewards to an activity
+people already enjoy can **reduce** intrinsic engagement, and shift behaviour
+toward whatever is measured and paid.
+
+Concretely, for your events: once currency is on the table, teams optimise for
+winning rather than for the collaboration the day is supposedly teaching. A team
+that wins by letting its one strong member do everything earns the same as a team
+that wins by including everyone — and the currency cannot tell them apart.
+
+This is not an argument against the feature; you already use currency successfully
+and know its effect in the room better than any paper does. It is an argument for
+two cheap safeguards:
+
+1. **Pay for participation as well as placing.** A non-trivial amount for every
+   team that completes, so the gap between first and last is motivating rather than
+   decisive. Your preset makes this a one-time setup choice.
+2. **Watch for it in the data.** You now have both win records and peer ratings, so
+   you can actually check whether teams that win rate each other *worse* on
+   `support` — which would be the signature of exactly this problem. If that
+   correlation shows up across events, the payout spread is too steep.
+
+The second point is only possible because the two systems are separate. It is a
+real argument for having kept them apart.
+
 ## 7. Legal and regulatory
 
 Peer evaluations of named individuals are personal data, and NRICs are personal
@@ -160,6 +212,14 @@ needs to be written down before someone asks.
 
 Decide with the client who is controller (recommended: the client company; you
 are processor) and get it into the engagement terms.
+
+One note on the currency: it is a points ledger that converts to physical tokens at
+a counter and is spent on site the same day. It is not stored value, it is not
+redeemable for cash, and it does not persist beyond the programme — which keeps it
+clear of anything resembling a payment instrument. Worth keeping it that way. The
+moment a balance becomes transferable between people, or survives indefinitely, or
+converts to something with cash value, the regulatory picture changes and is worth
+checking before you build it.
 
 ## 8. Business model risk
 
