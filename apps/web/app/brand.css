@@ -1,0 +1,40 @@
+/* ──────────────────────────────────────────────────────────────────────────
+   Brand tokens — PLACEHOLDERS.
+
+   Replace the five values marked TODO with the Core Apex palette. Everything
+   else derives from them, so this is the only file that needs editing.
+   Tailwind v4 reads @theme, so these become utilities (bg-brand, text-ink, …).
+   ────────────────────────────────────────────────────────────────────────── */
+
+@theme {
+  --color-brand:        #1f2937;  /* TODO primary */
+  --color-brand-dark:   #111827;  /* TODO primary, darker — hovers, headers */
+  --color-accent:       #0ea5e9;  /* TODO accent — the currency release, primary actions */
+  --color-ink:          #18181b;  /* TODO body text */
+  --color-surface:      #fafaf9;  /* TODO page background */
+
+  --color-surface-raised: #ffffff;
+  --color-hairline:       #e4e4e7;
+  --color-muted:          #71717a;
+
+  /* Status. Kept separate from brand so an alert never reads as a brand colour. */
+  --color-good:    #15803d;
+  --color-warn:    #b45309;
+  --color-danger:  #b91c1c;
+
+  /* The team number has to be readable at arm's length in a noisy room. */
+  --text-team-number: 4.5rem;
+
+  --font-sans: var(--font-brand, ui-sans-serif, system-ui, sans-serif);
+}
+
+/* Minimum tap target (docs/01 N5). Participants are standing, one-handed,
+   possibly outdoors and slightly out of breath. */
+@layer base {
+  button,
+  [role='button'],
+  a[data-tap],
+  input[type='radio'] + label {
+    min-height: 44px;
+  }
+}

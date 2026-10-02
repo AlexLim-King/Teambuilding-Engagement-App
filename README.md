@@ -18,8 +18,16 @@ Two interfaces, one codebase:
 
 ## Status
 
-**Design phase.** This repository currently contains the specification and
-architecture only — no application code yet. Read the docs in order:
+**Foundation built, features next.** The monorepo, database schema and CI are in
+place and verified; the feature work is sequenced in
+[docs/14-build-plan.md](docs/14-build-plan.md). Start there, then read the
+specification below.
+
+```bash
+pnpm install && pnpm dev          # see docs/14 for Supabase setup
+```
+
+Built with Next.js on Vercel, Postgres and Auth on Supabase.
 
 | # | Document | What it settles |
 |---|----------|-----------------|
@@ -38,6 +46,7 @@ architecture only — no application code yet. Read the docs in order:
 | 11 | [Mid-event changes](docs/11-mid-event-changes.md) | Someone leaves or returns mid-event, and what it touches |
 | 12 | [Gap audit](docs/12-gaps.md) | The gap audit and what was decided for each item |
 | 13 | [Client report](docs/13-client-report.md) | The four analyses, what they say, and how they mislead |
+| 14 | [**Build plan**](docs/14-build-plan.md) | **Stage-by-stage build order, and how to run it on your laptop** |
 
 Start with **00-decisions.md** — it lists the questions that still need your
 answer before code is worth writing.
