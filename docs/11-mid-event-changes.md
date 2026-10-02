@@ -84,20 +84,83 @@ equivalent and is not:
 So: **no imputation.** `n` drops to 3, the shrinkage handles it, and the displayed
 count stays truthful. This is a scope reduction, not an omission.
 
+## The catch-up prompt
+
+A dead battery should not cost anyone currency or engagement score. So a missed
+evaluation does not disappear when the window closes — it becomes an **outstanding
+item** the participant can still complete.
+
+Any round where a participant has an unsubmitted assignment and the round is not yet
+finalised shows as outstanding. The next time they open the app — charged, back in
+signal, tab reopened — they get:
+
+```
+┌──────────────────┐
+│ You missed one   │
+│                  │
+│ Round 2 —        │
+│ Blindfold Maze   │
+│                  │
+│ ⏳ 50 coins       │
+│ waiting          │
+│                  │
+│ [ Complete now ] │
+│ [ Later ]        │
+└──────────────────┘
+```
+
+Submitting releases the pending award and counts fully for participation. It is
+recorded as `submitted_late` so the facilitator can see the pattern, but it is not
+penalised — the evaluation happened, which is what the measure is about.
+
+This is **participant-driven**, not facilitator-triggered. Nobody has to notice the
+problem and open a window; the prompt simply appears for anyone who has one
+outstanding. That matters because the facilitator will not spot a quiet person whose
+phone died, and it removes the main unfairness in counting non-response.
+
+### Two round states, not one
+
+| State | Means |
+|---|---|
+| `closed` | The on-time window is over. The facilitator has moved the room on. Outstanding evaluations are **still submittable** |
+| `finalised` | No further submissions. Unreleased pending awards forfeit. Scores for the round are settled |
+
+Finalising is a deliberate facilitator action — typically at a break, lunch, or the
+end of the day, not the moment an activity ends. The gap between `closed` and
+`finalised` is where catch-up happens, and it should be generous.
+
+### What the excuse mechanism is for now
+
+With the catch-up prompt doing the heavy lifting, the excuse is a **fallback** for
+people who genuinely cannot complete it: they went home, their phone is unusable, or
+they are back at the office. One tap, releases the pending award, removes the round
+from their participation denominator.
+
+Order of remedies, cheapest first:
+
+1. **Catch-up prompt** — automatic, no facilitator involvement, covers almost
+   everything.
+2. **Excuse** — one tap, for people who cannot catch up at all.
+3. **Counted as not submitted** — what remains after both, by the time the round is
+   finalised. Which is now a much cleaner signal than it was: real currency forgone,
+   a prompt ignored, and no excuse requested.
+
 ## Two different kinds of not submitting
 
 These look identical in the database and must be treated as opposites:
 
 | | Excused | Non-response |
 |---|---|---|
-| Situation | Facilitator verified the person left, was unwell, or had a device failure | Present, active, and did not submit |
+| Situation | Facilitator verified the person left, was unwell, or cannot catch up at all | Present, active, prompted, and still did not submit by finalisation |
 | Facilitator action | Marks them left, or taps **Excuse** for that round | Nothing — it is simply recorded |
+| Pending currency | Released | Forfeited at finalisation |
 | Effect on participation | Round leaves the denominator entirely. Costs nothing | Counts as a miss |
 | Effect on the report | None | Lowers the `participation` component |
 
-The whole point of the excuse mechanism is that illness and a flat battery never
-reach the engagement figure. What reaches it is someone who was there, could have
-submitted, and did not — which is genuine engagement data for an engagement report.
+The whole point of the catch-up prompt and the excuse is that illness and a flat
+battery never reach the engagement figure. What reaches it is someone who was there,
+was prompted, had currency waiting, and still did not submit — which is genuine
+engagement data for an engagement report.
 
 **Excusing is one tap per person per round**, with a reason of `technical` or
 `facilitator`. It has to be that cheap, because the only moment anyone will do it is
@@ -184,7 +247,10 @@ on the facilitator's device.
    screen goes back to normal on next sync.
 2. **A note on the evaluation screen** when the assigned ratee left partway, with
    skip made obvious.
-3. **The team list drops the name** on next sync. If they are offline it updates
+3. **The team list drops the name** on next sync.
+4. **The catch-up prompt** for anyone with an outstanding evaluation — the one new
+   participant-side flow of any substance, and still just a screen they already have
+   with a different entry point. If they are offline it updates
    late, which is harmless.
 
 No new offline logic, no new storage, no new conflict handling.
@@ -217,6 +283,11 @@ to every late-arriving write in the system, not just this one.
 - Participation with fewer than 2 assigned evaluations is reported as a raw count
   and does not enter the composite.
 - No surface anywhere renders a motive for a non-submission.
+- An outstanding evaluation remains submittable after the window closes and until the
+  round is finalised, and submitting it releases the pending award.
+- A late submission counts fully for participation and is flagged `submitted_late`.
+- Finalising a round makes further submission impossible and forfeits unreleased
+  pending awards.
 - Withdraw → return preserves `pair_history` and `rating_history`; the returning
   participant is never assigned a ratee they already rated.
 - A rating submitted offline for a since-withdrawn ratee is accepted and flagged,

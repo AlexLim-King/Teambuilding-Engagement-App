@@ -17,6 +17,10 @@
 | Individual reporting | **Facilitator only.** Client receives team-level patterns plus a positive-only "names that stood out" list | Keeps the talent-spotting value without handing over a numeric league table built on n = 4. |
 | Currency | **Separate from peer evaluation entirely.** Earned from live activity results, awarded by the facilitator as a per-member amount | Nothing anyone says about a teammate pays out, so nominations never become deals. See [10](10-currency.md). |
 | Currency storage | **Append-only integer ledger**, balance always derived | The first mutable, contested state in the system; it does not get the same treatment as immutable ratings. |
+| Currency release | **Earned on winning, released on submitting.** An award is pending until the participant completes that round's evaluation | Makes a refusal cost something real, which is what makes the non-response signal meaningful. Pending amounts are a separate table, never part of the balance, so the ledger stays append-only. |
+| Missed evaluations | **Catch-up prompt**, automatic and participant-driven, until the facilitator finalises the round | A dead battery costs nobody anything. The excuse becomes a fallback for people who cannot catch up at all. |
+| Forfeiture | Unreleased awards forfeit at **round finalisation**, and the participant sees it | An unseen consequence shapes no behaviour. Manual release always available. |
+| Late submissions | **Count fully** for participation; flagged `submitted_late` | The evaluation happened, which is what the measure is about. The flag lets you see the pattern. |
 | Redemption | Facilitator hands over **physical currency** at a counter and taps Redeemed, zeroing the balance | No in-app shop, no catalogue, no stock. One designated device per redemption window. |
 | Balance lifetime | **Persists across a multi-day programme**, dies with the programme | Introduces a `programme` entity above `event`. |
 | Balance visibility | **Own balance and own earning history only** | No leaderboard; no participant device holds anyone else's financial state. |

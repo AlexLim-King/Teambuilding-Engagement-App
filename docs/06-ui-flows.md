@@ -77,14 +77,15 @@ fits without scrolling.
                              │
                              ▼
                         P-7 Done
-                        "Thanks — saved."
-                        + balance, if currency is on
                         ┌──────────────┐
+                        │   Thanks!    │
+                        │              │
+                        │   +50 coins  │  ← released, animated in
+                        │   released   │
+                        │              │
                         │  YOUR BANK   │
-                        │     120      │  ← 56 px
+                        │     170      │  ← 56 px
                         │    coins     │
-                        │ Round 3  +50 │
-                        │ Round 2  +40 │
                         └──────────────┘
                         (sync state shown discreetly)
 ```
@@ -127,7 +128,17 @@ It's used to give the group feedback, not to rank anyone."* (R-P8). This is both
 an ethical obligation and a data-quality measure — people rate more honestly when
 they know the rules.
 
-**P-7 Done — and the balance.** Where currency is enabled, this screen carries the
+**P-0 Catch-up prompt.** Shown on app open to anyone with an outstanding evaluation
+from a round that is closed but not finalised — the dead-battery case. It names the
+round, shows the currency waiting, and offers **Complete now** or **Later**. It takes
+them into the ordinary evaluation flow; nothing about it is a special screen beyond
+the entry point. This is the one participant-side addition of any substance in the
+whole withdrawal / non-response design.
+
+**P-7 Done — and the release.** The release is the moment worth designing. The
+pending amount moves into the balance while the participant is still looking at the
+screen, and it should be unmistakable — this is the engagement payload, and a delayed
+or silent release teaches nothing. Where currency is enabled, this screen carries the
 participant's own balance and the list of how it was earned. The history is not
 decoration: "+50 — Team 3, 1st place, Blindfold Maze" is the engagement payload,
 and it is the cheapest possible dispute resolution when someone thinks they are
@@ -196,9 +207,13 @@ it replaces a promise you cannot keep with a number you can plan around.
 - **Commit** publishes teams and rating assignments.
 - **Open evaluation** → live counter `41 / 48 submitted`, with names of who hasn't,
   so the coach can nudge the room. Close manually or on a timer.
-- Each outstanding name carries a one-tap **Excuse** with `technical` /
-  `facilitator`, which removes that round from the person's participation
-  denominator. This is the only moment anyone will realistically use it, so it lives
+- Each outstanding name shows its pending amount and carries a one-tap **Excuse**
+  (`technical` / `facilitator`), which releases the currency and removes the round
+  from the person's participation denominator. Use it for people who cannot catch up
+  at all; everyone else gets the automatic prompt.
+- **Finalise round** is a separate, later action — at a break or the end of the day.
+  It closes catch-up and forfeits unreleased awards, and the button says so plainly:
+  *"Finalise — 3 people still outstanding, 150 coins will be forfeited."* This is the only moment anyone will realistically use it, so it lives
   on the chase list rather than buried in a settings screen. Everyone left
   unexcused when the window closes is recorded as not having submitted — a fact, not
   a verdict.

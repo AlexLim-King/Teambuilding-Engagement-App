@@ -111,6 +111,12 @@ team lists against your own judgement before anything is dressed up.
 | **Idempotency key** | A unique id on each entry, so the same request arriving twice is recognised and ignored. What makes patchy wifi harmless. |
 | **Single designated writer** | Only one device can run redemption during a window. Since cashing out happens at one counter, this costs nothing and removes the only dangerous race in the system. |
 | **Integer units** | Currency is whole numbers only, never decimals. Decimals in money code eventually produce 49.99999999. |
+| **Pending award** | Currency earned by winning but not yet released, because the person hasn't submitted that round's evaluation. Shown separately and not part of the balance. |
+| **Release** | The moment a pending award becomes real currency in someone's bank — on submitting, on being excused, or when you release it by hand. |
+| **Forfeited** | A pending award that was never released, because the round was finalised with no submission and no excuse. |
+| **Closed vs. finalised** | Closed = the on-time window is over, people can still catch up. Finalised = no more submissions, unreleased currency forfeits. The gap between them is the catch-up period. |
+| **Catch-up prompt** | What a participant sees on opening the app with a missed evaluation outstanding — names the round, shows the waiting currency, one tap to complete it. |
+| **Straight-lining** | Giving everyone the same number down the list to get through quickly. The main data-quality threat once currency rewards submitting. Measured, never punished. |
 | **Spot award / adjustment** | A facilitator giving an individual an amount outside the normal team payout — for helping pack up, or to fix an error. |
 
 ---

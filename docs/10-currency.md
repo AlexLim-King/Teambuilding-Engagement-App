@@ -117,15 +117,97 @@ Append-only. The single source of truth for every balance.
 | `created_at` | timestamptz | |
 
 ```
-balance(person) = SUM(amount) WHERE programme_participant_id = person
+balance(person)  = SUM(amount) WHERE programme_participant_id = person
+pending(person)  = SUM(amount) FROM pending_award WHERE status = 'pending'
 ```
 
-That is the whole calculation. Note there is no `WHERE NOT reversed` clause —
+That is the whole calculation. Pending amounts are a different table entirely and
+never enter the balance. Note there is no `WHERE NOT reversed` clause —
 because a reversal is itself an entry with the opposite amount, a plain sum is
 always correct. This is deliberate: filtering logic is where ledger bugs live.
 
 `batch_id` matters more than it looks. Awarding 50 each to a six-person team
 creates six entries; if you picked the wrong team, you want **one** undo, not six.
+
+## Earned on winning, released on submitting
+
+Currency is **earned** when a team does well and **released** into the person's bank
+only when they submit that round's evaluation. Until then it sits visible but
+unavailable:
+
+```
+┌──────────────┐
+│  YOUR BANK   │
+│     120      │
+│    coins     │
+│              │
+│ ⏳ 50 pending │
+│ Complete your │
+│ evaluation to │
+│ release it    │
+└──────────────┘
+```
+
+This makes a refusal cost something real, which is the point — and it is why the
+engagement signal in [04](04-scoring-and-bias.md#the-composite-engagement-score) is
+meaningful rather than noisy. Someone who forgoes currency, ignores a catch-up
+prompt, and does not ask to be excused is making a choice.
+
+### How this stays compatible with an append-only ledger
+
+A pending award is **not money yet**, so it does not go in the ledger. It lives in
+its own table with its own lifecycle, and converts into a ledger entry at the moment
+of release. The ledger therefore contains only real, released currency and the
+invariant `balance = SUM(amount)` survives untouched.
+
+#### `pending_award`
+
+| column | type | notes |
+|---|---|---|
+| `id` | uuid pk | |
+| `programme_participant_id` | uuid fk | |
+| `round_id` | uuid fk | The round whose evaluation gates it |
+| `team_id` | uuid fk | |
+| `batch_id` | uuid | Groups one facilitator action |
+| `amount` | **integer** | |
+| `reason` | text | "Team 3 · 1st place · Blindfold Maze" |
+| `status` | enum | `pending` \| `released` \| `forfeited` \| `cancelled` |
+| `released_ledger_entry_id` | uuid fk null | Set on release |
+| `created_by` | uuid fk | |
+
+This table is allowed to be mutable precisely because it is not money. The moment it
+becomes money it becomes an immutable ledger row and never changes again.
+
+### The four ways a pending award resolves
+
+| | Trigger | Result |
+|---|---|---|
+| **Released** | Participant submits that round's evaluation | Ledger entry created; balance rises immediately |
+| **Released** | Facilitator excuses the round | Same — it was not the participant's fault |
+| **Released** | Facilitator releases manually | Same — an override that always exists |
+| **Forfeited** | Facilitator finalises the round with no submission and no excuse | No ledger entry. Participant sees it go |
+| **Cancelled** | Facilitator undoes the award while still pending | No ledger entry, no forfeit on anyone's record |
+
+Release is **immediate on submission** — the balance moves while the participant is
+still looking at the screen. "Evaluation submitted · +50 released" is the whole
+engagement payload; a delayed release teaches nothing.
+
+**Forfeiture is shown, not silent.** An unseen consequence shapes no behaviour, and
+the mechanic only works if round 2 is informed by what happened in round 1.
+
+### Order of operations does not matter
+
+In a real room the award and the evaluation can happen in either order. The rule is
+stated in terms of state rather than sequence: **a pending award is created already
+released if that participant has already submitted for that round.** So awarding
+after everyone has submitted releases to everyone instantly, and awarding before the
+window opens leaves everything pending — both correct, no special-casing.
+
+### Undo still works in both states
+
+The facilitator's one-tap undo on a `batch_id` handles the mixed case: pending
+entries become `cancelled`, already-released ones get a compensating `reversal` in
+the ledger. One action, correct regardless of who in the team has submitted.
 
 ## Awarding
 
@@ -290,6 +372,11 @@ Worth logging from the first pilot even though it will say nothing for months.
 | **C7** | Redemption zeroes a balance via a compare-and-set, restricted to one designated device per window |
 | **C8** | Undo last redemption restores the balance exactly |
 | **C9** | Balances persist across every event in a programme |
+| **C13** | An award is pending until the participant submits that round's evaluation; pending amounts are shown separately and never counted in the balance |
+| **C14** | Release is immediate on submission, and also on facilitator excuse or manual release |
+| **C15** | Pending awards forfeit when the facilitator finalises the round, and the participant sees it happen |
+| **C16** | An award created after a participant has already submitted is released immediately |
+| **C17** | Undoing an award batch is correct whether its entries are pending, released, or a mix |
 | **C10** | Participants see their own balance and its earning history; never anyone else's |
 | **C11** | Currency label configurable per programme |
 | **C12** | Every ledger entry records which facilitator created it |
@@ -308,3 +395,9 @@ Worth logging from the first pilot even though it will say nothing for months.
   the same final balances.
 - Integer arithmetic throughout — a test that fails if any currency value is ever
   a float.
+- A pending award never appears in a balance; a released one always does.
+- Submitting releases exactly the pending awards for that round and no others.
+- Awarding to a team where some members have submitted and some have not produces
+  the right mix of released and pending, and one undo resolves all of them.
+- Finalising a round forfeits only unreleased, unexcused awards.
+- Releasing the same pending award twice creates one ledger entry, not two.

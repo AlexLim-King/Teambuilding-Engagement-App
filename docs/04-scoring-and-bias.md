@@ -180,6 +180,9 @@ These are enforced in code, not left to the facilitator:
 - **A skipped nomination is not a non-submission.** "No one in particular" is a
   deliberate feature with an expected 10–20% use rate; penalising it would push
   people into fabricating nominations.
+- **Late catch-up submissions count fully.** They are flagged `submitted_late` so the
+  pattern is visible, not penalised — the evaluation happened, which is what the
+  measure is about.
 - **Partial submissions count as not submitted** — but are recorded distinctly,
   because someone who opened the evaluation and abandoned it halfway is a different
   story from someone who never opened it, and the facilitator should see which.
@@ -205,6 +208,29 @@ Participants never see their engagement score, their participation rate, or any
 component of it. What they see is unchanged: their own nominations received
 (positive-only) and their currency balance. The penalty exists in the report, not
 on their phone.
+
+## What gating currency on submission does to the data
+
+Releasing currency only on submission drives the completion rate, which is the point.
+It also creates one pressure worth watching: it rewards **submitting**, not
+submitting thoughtfully. Someone who wants their 50 coins can tap 4-4-4 and move on.
+
+That behaviour has a name — straight-lining — and it is the main threat to a
+rating-based measure under any kind of time or incentive pressure. Two cheap
+responses, neither of which punishes anyone:
+
+1. **The design already resists it.** One criterion per screen rather than three
+   stacked ([06](06-ui-flows.md)) measurably reduces straight-lining compared with a
+   grid, because there is no visual column to run a finger down.
+2. **Measure it rather than police it.** Flag submissions where all criteria are
+   identical, and log `seconds_to_submit`. Report the rate on the facilitator view —
+   *"straight-lined: 22% of submissions this round"* — and never act against an
+   individual for it. A fast reader is indistinguishable from a careless one, and
+   blocking a quick submission would be a worse experience for the honest case.
+
+The number to watch is the trend. If straight-lining climbs after the currency gate
+goes in, the gate is buying completion at the cost of signal, and the fix is in the
+reward size or the question wording, not in enforcement.
 
 ## Precision weighting (v2)
 

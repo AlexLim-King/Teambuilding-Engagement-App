@@ -29,6 +29,7 @@ Organisation
         ├── ProgrammeParticipant ──── CurrencyLedger (append-only)
         └── Event
         ├── Participant        (a RosterPerson claimed on a device)
+        ├── PendingAward       (earned, not yet released — gated on submission)
         ├── Round
         │     ├── Team ──── TeamMember
         │     ├── RatingAssignment   (who rates whom)
@@ -124,7 +125,8 @@ making 60 people invent passwords.
 | `nomination_question_key` | text | Drawn from the rotating bank at round creation — see [09](09-question-bank.md) |
 | `state` | enum | `planned` `teams_formed` `active` `evaluating` `closed` |
 | `evaluation_opened_at` | timestamptz null | |
-| `evaluation_closes_at` | timestamptz null | |
+| `evaluation_closes_at` | timestamptz null | End of the *on-time* window |
+| `finalised_at` | timestamptz null | After this, no submissions and unreleased pending awards forfeit |
 
 ### `team` / `team_member`
 | column | type | notes |
@@ -167,6 +169,8 @@ rates the same person twice across the event. See
 | `received_at` | timestamptz | Server clock, set on ingest |
 | `client_seq` | int | Monotonic per device, for ordering when clocks lie |
 | `is_partial` | bool | Opened and abandoned, rather than never started. Counts as not submitted but is reported distinctly |
+| `submitted_late` | bool | Submitted after the on-time window via the catch-up prompt. Counts fully; flagged so the pattern is visible |
+| `seconds_to_submit` | int null | Time from opening the evaluation to submitting. Surfaces implausibly fast submissions; never blocks one |
 | `ratee_withdrawn` | bool | Set on ingest if the ratee was withdrawn by the time this arrived. Flagged, never rejected — see [11](11-mid-event-changes.md#one-principle-this-makes-explicit) |
 | unique | `(round_id, rater_participant_id)` | Enforces R18 |
 

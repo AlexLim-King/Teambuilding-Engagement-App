@@ -50,9 +50,11 @@ with 4 minutes to get started.
 - **F12** When someone falls ill or has to leave, I mark them inactive on my own
   device and the next round forms without them — and I can mark them back in when
   they return.
-- **F13** When someone's phone dies or they genuinely couldn't submit, I excuse that
-  round for them in one tap so it never counts against their engagement. Anyone who
-  was present and simply didn't submit is counted, and I can see who.
+- **F13** When someone genuinely cannot catch up at all, I excuse that round in one
+  tap — it releases their currency and never counts against their engagement.
+- **F14** I finalise a round when the room has moved on for good, which closes
+  catch-up and forfeits unreleased currency. Until then people can still complete
+  what they missed without me doing anything.
 
 ### Participant
 
@@ -69,6 +71,10 @@ with 4 minutes to get started.
 - **P8** I am told, before I rate anyone, who can see my answers.
 - **P9** I see my own currency balance and exactly how I earned it, so I know what
   I am owed before I reach the counter. I never see anyone else's.
+- **P10** When I submit my evaluation, the currency I earned that round lands in my
+  bank immediately — I can see it happen.
+- **P11** If my phone died and I missed one, the app prompts me to complete it when I
+  come back, with the waiting currency shown, so I lose nothing.
 
 ## Functional requirements
 
@@ -112,8 +118,11 @@ with 4 minutes to get started.
   spec in [11](11-mid-event-changes.md).
 
 ### Evaluation
-- **R13** Facilitator opens an evaluation window; it can be closed manually or on
-  a timer.
+- **R13** Facilitator opens an evaluation window; it can be closed manually or on a
+  timer. Closing ends the *on-time* window only — outstanding evaluations remain
+  submittable until the facilitator separately **finalises** the round.
+- **R13b** A participant with an outstanding evaluation is prompted on next app open,
+  with the pending currency shown. Participant-driven; no facilitator action needed.
 - **R14** Each participant is assigned exactly one teammate to rate, by a
   derangement of the team, so every member is rated exactly once.
 - **R14b** A participant is **never** assigned to rate someone they have already

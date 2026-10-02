@@ -210,7 +210,12 @@ observable, *"refused"* is a guess about a person that could follow them into a
 performance conversation. The facilitator was in the room and supplies the
 interpretation.
 
-The residual risk is the excuse going unused. It is one tap on the chase list for
+The catch-up prompt removes most of this: a missed evaluation stays submittable until
+the round is finalised, and anyone who reopens the app is prompted with their waiting
+currency shown. Nobody has to notice the problem for it to be fixed.
+
+The residual risk is the excuse going unused for the people the prompt cannot reach —
+someone whose phone is genuinely dead for the rest of the day. It is one tap on the chase list for
 exactly this reason, but a busy facilitator will miss some, and a quiet participant
 with a flat battery will occasionally be counted as disengaged. Worth knowing when
 reading a single low participation figure, and worth saying to a client.
@@ -221,6 +226,23 @@ rendered on the same row rather than behind a tap, why no composite exists when 
 peer component is thin, and why a suppressed row cannot be sorted into a ranking.
 Those are structural guards, not guidelines — the pressure to just sort by the one
 number is constant.
+
+## 6g. Gating currency buys completion, possibly with signal
+
+Releasing currency only on submission will raise the completion rate sharply. It will
+also reward submitting over thinking: 4-4-4 collects the same 50 coins as a considered
+answer.
+
+This is the clearest case in the whole design of two goals pulling apart — engagement
+mechanics want participation, measurement wants care — and it is worth holding both in
+view rather than declaring the tension away. The design's answer is to resist
+straight-lining structurally (one criterion per screen) and to **measure** it rather
+than police it, because a fast reader and a careless one are indistinguishable. Detail
+in [04](04-scoring-and-bias.md#what-gating-currency-on-submission-does-to-the-data).
+
+Watch the straight-lining rate across your first few events. If it climbs with the
+currency gate in place, the lever is the reward size or the question wording — not
+enforcement, and not blocking quick submissions.
 
 ## 7. Legal and regulatory
 
