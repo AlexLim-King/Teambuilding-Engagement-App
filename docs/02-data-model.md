@@ -170,13 +170,33 @@ rates the same person twice across the event. See
 | `client_seq` | int | Monotonic per device, for ordering when clocks lie |
 | `is_partial` | bool | Opened and abandoned, rather than never started. Counts as not submitted but is reported distinctly |
 | `submitted_late` | bool | Submitted after the on-time window via the catch-up prompt. Counts fully; flagged so the pattern is visible |
-| `seconds_to_submit` | int null | Time from opening the evaluation to submitting. Surfaces implausibly fast submissions; never blocks one |
+| `seconds_to_submit` | int null | Active seconds from opening the evaluation to submitting. Surfaces implausibly fast submissions; never blocks one. Null where it could not be measured reliably |
 | `ratee_withdrawn` | bool | Set on ingest if the ratee was withdrawn by the time this arrived. Flagged, never rejected — see [11](11-mid-event-changes.md#one-principle-this-makes-explicit) |
 | unique | `(round_id, rater_participant_id)` | Enforces R18 |
 
 Device clocks are unreliable and are the classic offline-sync trap. `submitted_at`
 is kept for interest only; anything that depends on ordering uses
 `(client_seq, received_at)`.
+
+`seconds_to_submit` follows the same principle and needs **no server access and no
+extra request** — it is a duration computed on the device and carried inside the
+submission payload that is already queued in the outbox. Three rules, because the
+obvious implementation is subtly wrong:
+
+- **Measure with `performance.now()`, not `Date.now()`.** A wall clock can jump
+  mid-evaluation when the OS syncs time or the participant changes timezone, which
+  would yield a negative or absurd duration. Only the *difference* is ever sent, so a
+  device with a wrong clock produces a correct measurement.
+- **Pause while the page is hidden** (Page Visibility API). Someone who opens the
+  evaluation, pockets their phone for five minutes and then submits would otherwise
+  look unusually thoughtful.
+- **Record `null` if the page reloaded mid-evaluation**, since `performance.now()`
+  resets. A missing value is better than a misleading one, and this is a diagnostic
+  rather than a requirement.
+
+Straight-lining detection needs no timing at all — it is simply whether all criteria
+values are identical, derivable from the payload itself at zero cost. It is the more
+useful of the two signals and the cheaper.
 
 ### `criterion_rating`
 | column | type | notes |
