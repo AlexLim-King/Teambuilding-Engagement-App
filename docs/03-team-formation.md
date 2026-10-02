@@ -32,17 +32,68 @@ percent of the best known arrangement.
 Before any algorithm runs, arithmetic caps the "everyone meets everyone" goal. In
 one round a person meets `k − 1` new people, so over `R` rounds:
 
+Team size is a property of the **activity**, not the event — a rope course runs teams of
+5, a tower build runs teams of 10 — so coverage sums over the actual activities planned:
+
+```
+max_coverage = min(1, Σ over activities r of (k_r − 1) / (P − 1))
+```
+
+Where every activity shares one team size `k`, that reduces to the familiar form:
+
 ```
 max_coverage = min(1, R × (k − 1) / (P − 1))
 rounds_for_full_coverage = ceil((P − 1) / (k − 1))
 ```
 
+A mixed day therefore reaches further than a uniform one at the smaller size: 60 people
+across activities of 5, 10, 8 and 6 covers `(4+9+7+5)/59 = 42%`, against 27% if every
+activity ran teams of 5.
+
+For the real event shape — **40–80 participants, teams of 5–10**:
+
 | People | Team size | Rounds | Ceiling | Rounds for 100% |
 |---|---|---|---|---|
-| 24 | 4 | 4 | 52% | 8 |
-| 48 | 6 | 4 | 43% | 10 |
-| 48 | 6 | 8 | 85% | 10 |
-| 100 | 5 | 5 | 20% | 25 |
+| 40 | 5 | 4 | 41% | 10 |
+| 40 | 5 | 6 | 62% | 10 |
+| 40 | **10** | 4 | **92%** | 5 |
+| 60 | 8 | 4 | 47% | 9 |
+| 80 | 5 | 4 | 20% | 20 |
+| 80 | **10** | 4 | **46%** | 9 |
+| 80 | 10 | 6 | 68% | 9 |
+
+Team size is a far stronger lever than round count. Going from teams of 5 to teams of
+10 roughly doubles coverage for the same number of activities.
+
+## Team size 5–10 changes two things
+
+### It makes the mixing goal reachable
+
+See the table above: 40 people in teams of 10 reaches 92% coverage in four activities.
+The "everyone works with everyone" ambition, which looked arithmetically hopeless at
+teams of 5, is nearly achievable at teams of 10 for a 40-person event.
+
+### It weakens the individual measurement
+
+The honest counterweight. In a team of 10 doing a physical or build activity, three
+people typically do the work and seven watch. Peer ratings depend on the rater having
+*observed* the ratee, and in a team of 10 a given pair may barely have interacted.
+
+Each person is still rated exactly once per round — the derangement guarantees that
+regardless of size — so `n` is unchanged. What changes is the **quality** of each
+rating: a rating from one of four teammates is better-grounded than a rating from one
+of nine.
+
+So the two goals pull apart, and the lever is the same knob:
+
+| Team size | Coverage | Individual rating quality |
+|---|---|---|
+| 5–6 | Lower | Better — raters actually saw the person |
+| 8–10 | Higher | Weaker — more passive observers |
+
+Neither is wrong. Pick by what the client bought: a cross-silo mixing day wants 10, a
+leadership assessment wants 5. The round planner should say which trade the current
+configuration is making, in the same panel as the coverage forecast.
 
 Balance-first priority (see [00](00-decisions.md#the-trade-you-just-made-balance-first))
 costs a further 10–20% of that ceiling, because every constraint the algorithm
@@ -50,7 +101,7 @@ must satisfy is freedom it no longer has to avoid repeats. So a 48-person,
 6-per-team, 4-round day realistically reaches **~35% coverage**, not 43%.
 
 The facilitator's round planner shows this live as team size and round count
-change ([06](06-ui-flows.md#f-3-round-planner)). It turns a promise you cannot
+change ([06](06-ui-flows.md#f-3-day-planner--the-coverage-forecast)). It turns a promise you cannot
 keep into a number you can plan around, and it points at the real lever: **larger
 teams and more rounds**, not a cleverer algorithm.
 
@@ -131,7 +182,11 @@ template, so a cross-silo workshop can run novelty-first without a code change.
 
 ### Phase 1 — construction
 
-1. `T = round(P / target_team_size)`, clamped so all sizes fall in range.
+1. `T = round(P / team_size)` for this activity, clamped within its
+   `[min_team_size, max_team_size]`. Where a session runs parallel stations with
+   different team sizes, formation allocates across the whole session in one pass so
+   nobody lands in two simultaneous activities, and each team's `target` is its own
+   activity's size.
 2. Place **leaders first**, one per team in seeded-random order. More leaders than
    teams → distribute the excess to teams whose existing leader they have met
    least often.
@@ -227,11 +282,17 @@ Feasibility is not a concern at realistic team sizes. Derangement counts:
 | 6 | 265 | ~180 |
 | 7 | 1,854 | ~1,300 |
 
-For `k ≤ 8` the search simply enumerates all derangements — microseconds — filters
-the forbidden ones, and picks by: **fewest forbidden arcs (target: zero) → prefer
-a single cycle → fewest reverse-direction repeats (B rating A when A already rated
-B) → seeded random**. Above `k = 8` it switches to randomised sampling with the
-same scoring.
+| 10 | 1,334,961 | effectively all of them |
+
+For `k ≤ 7` (up to 1,854 derangements) the search enumerates exhaustively in
+microseconds, filters forbidden arcs, and picks by: **fewest forbidden arcs (target:
+zero) → prefer a single cycle → fewest reverse-direction repeats (B rating A when A
+already rated B) → seeded random**.
+
+For `k ≥ 8` — which at teams of 5–10 is a normal case, not an exception — it samples
+a few hundred random derangements and scores them identically. With over a million
+derangements available at `k = 10` and only a handful of forbidden arcs, a zero-repeat
+candidate turns up in the first few draws essentially always.
 
 **Fallback ladder**, used only if the ideal is impossible:
 

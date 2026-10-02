@@ -5,12 +5,11 @@ milestone ends with something you can put in front of a real person.
 
 ## M0 — Answer the open questions *(you, not code)*
 
-Settle what remains in [00-decisions.md](00-decisions.md): **event shape**
-(headcount / rounds / team size), one-off vs. longitudinal, final criteria
-wording, and the data-controller question. Event shape is the one that matters
-most — it decides whether individual scores are reportable at all, and M1's
-synthetic study cannot answer "how many rounds do you need" without a target
-team size to answer it for.
+Mostly settled by the gap audit ([12](12-gaps.md)). What remains in
+[00-decisions.md](00-decisions.md): **rounds per day**
+(not blocking — the M1 study covers 3, 4 and 6), one-off vs. longitudinal,
+final criteria wording, and the data-controller question. Headcount (40–80) and team size
+(5–10, per activity) are settled.
 
 ## M1 — `core` algorithms, headless
 
@@ -24,7 +23,8 @@ reversal logic, integer-only guarantees). No UI. Delivered with:
   negative, no float ever touches a currency value.
 - The property tests listed in [03](03-team-formation.md#test-plan-for-this-module),
   including the one your requirement turns into: **zero repeat rater→ratee pairs
-  across 1,000 simulated 8-round events**.
+  across 1,000 simulated 8-round events**, and the `k ≥ 8` sampling path, which at teams of
+  5–10 is the normal case rather than an exception.
 - The **synthetic recovery study** from [04](04-scoring-and-bias.md#validating-that-any-of-this-works),
   producing the table "how many rounds do you need for a reportable individual
   score." That table is a sales asset as much as an engineering result.
@@ -55,6 +55,15 @@ lands with M3:
 - Redemption counter with compare-and-set, single designated device, and undo.
 - Participant balance screen with earning history.
 - `programme` grouping so balances survive to day 2.
+- **Activity library** and **itinerary paste** — the setup path that makes the facilitator
+  flow fast. Library-first, since itinerary matching depends on it.
+- Per-activity team size, and `session` grouping for parallel stations.
+- Optional participant photo (self-capture; roster import later if a client ever supplies
+  them), facilitator-view only.
+- Facilitator per-team teamwork rating and "notice this person" flag.
+- Participation-only award path for non-competitive activities.
+- Redemption counter **lease** with expiry and explicit takeover.
+- Participant flow in **BM + English**.
 - Mark-as-left / mark-as-returned with history preservation
   ([11](11-mid-event-changes.md)), plus the withdrawn-state participant screen.
 
@@ -69,9 +78,15 @@ proposal with override, live join and submission counters, the sync protocol fro
 [05](05-architecture.md#the-offline-model), the facilitator team display board, and
 everything in M2b. This is the first version that can run a real event.
 
-**Gate: a pilot event with a friendly client, at your cost.** Expect the first
-five minutes to be rough and instrument accordingly — log every join, every
-autocomplete miss, every sync retry.
+**Gate: a pilot event with a friendly client, at your cost.** Expect the first five
+minutes to be rough and instrument accordingly — log every join, every autocomplete miss,
+every sync retry.
+
+**And run the product-focus debrief.** You chose to build all three — ops tool, engagement
+mechanic, analytics — and decide which is the business afterwards. That decision needs a
+mechanism or it will never happen: record which part the client reacted to, and what they
+asked about unprompted. Without it, M5 arrives with the same three-way ambiguity and no new
+information.
 
 ## M4 — Analytics and export
 
@@ -86,8 +101,12 @@ Two separate surfaces:
   [07](07-risks-and-blind-spots.md#3-consequences-you-do-not-control). No
   per-person scores.
 
-Plus the one-page facilitator explainer for "why is my score 3.9 when everyone
-rated me 4."
+Plus the client report proper — the four analyses in [13](13-client-report.md) — and the
+one-page facilitator explainer for "why is my score 3.9 when everyone rated me 4."
+
+The report is a client-facing deliverable whose credibility is partly visual, so work its
+chart design properly at this point rather than inheriting whatever the first library
+produces.
 
 ## M5 — Hardening
 

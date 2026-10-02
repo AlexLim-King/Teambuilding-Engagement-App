@@ -48,6 +48,10 @@ team lists against your own judgement before anything is dressed up.
 
 | Term | Means |
 |---|---|
+| **Activity** | One thing a set of teams did, evaluated at the end. The unit everything hangs off — teams, results, awards, the evaluation. In the schema this is called a `round`. |
+| **Session** | A time block. Only matters when stations run in parallel: two activities at once are two rounds sharing a session, so formation can place everyone across both in one pass. |
+| **Activity library** | Your reusable catalogue of activities, each with its fixed team size and whether it has a winner. Built up through ordinary use, so the second event configures itself. |
+| **Itinerary paste** | Paste the day's run-sheet, the app pulls out times and activity names, matches them to the library, and builds the day. You confirm rather than configure. |
 | **Roster / namelist** | The list of participants imported before the event. |
 | **Round** | One activity. A day might have 4 rounds; teams are re-formed for each. |
 | **Pairing / pair** | Two specific people being on the same team. "Repeat pairing" = they've been teamed before. |
@@ -92,6 +96,7 @@ team lists against your own judgement before anything is dressed up.
 | **Suppression** | Refusing to show a number the data can't support. No composite when the peer part is thin, and a suppressed row can't be sorted into a ranking. |
 | **Pull-only** | The participant's phone asks the server for a value when needed, rather than holding its own copy. How balances work, so no phone ever shows an authoritative-looking stale number. |
 | **Withdrawn / returned** | A participant marked as having left, and marked back in. Reversible, and returning keeps their history so it is not a loophole around the no-repeat rules. |
+| **Facilitator observation** | Your own 1–5 read on how a team worked, plus any individual you flag with a note. The only data here not produced by participants, which is what makes it useful as a check on them. |
 | **Property test** | A test asserting a rule always holds ("no one is ever assigned to rate the same person twice") across thousands of random cases, rather than checking one example. |
 
 ---
@@ -117,6 +122,8 @@ team lists against your own judgement before anything is dressed up.
 | **Closed vs. finalised** | Closed = the on-time window is over, people can still catch up. Finalised = no more submissions, unreleased currency forfeits. The gap between them is the catch-up period. |
 | **Catch-up prompt** | What a participant sees on opening the app with a missed evaluation outstanding — names the round, shows the waiting currency, one tap to complete it. |
 | **Straight-lining** | Giving everyone the same number down the list to get through quickly. The main data-quality threat once currency rewards submitting. Measured, never punished. |
+| **Participation-only award** | A flat amount to everyone who took part, for activities with no winner — reflection and trust exercises. |
+| **Lease** | A lock that expires unless renewed. The redemption counter uses one, so a dead phone releases it automatically instead of stopping the queue. |
 | **Spot award / adjustment** | A facilitator giving an individual an amount outside the normal team payout — for helping pack up, or to fix an error. |
 
 ---

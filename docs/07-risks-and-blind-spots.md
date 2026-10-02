@@ -244,6 +244,58 @@ Watch the straight-lining rate across your first few events. If it climbs with t
 currency gate in place, the lever is the reward size or the question wording — not
 enforcement, and not blocking quick submissions.
 
+## 6h. Photos raise the stakes of everything else
+
+A photo is the most identifying thing this system will hold. It is not special-category
+biometric data under PDPA or GDPR — nobody is running automated facial recognition, a human
+is glancing at a face — but a leak of sixty names, departments and faces is a materially
+worse incident than a leak of ratings, and it is the kind that gets noticed.
+
+The controls are in [02](02-data-model.md#participant_photo) and are not negotiable:
+facilitator-view only, never on another participant's device, never in a client export,
+deleted with the programme ahead of everything else, served through short-lived signed URLs.
+
+Two softer risks:
+
+- **Consent that is not really optional.** If the skip button is small, or the screen
+  implies a photo is expected, participants will feel obliged. It must be as prominent as
+  the capture button and the screen must say that skipping costs nothing — because under
+  the currency gate, people will reasonably assume everything they skip costs something.
+- **Scope creep.** A face-matched participant directory is a different product with
+  different obligations. The photo exists so a facilitator can give credit to the right
+  person; resist every suggestion to do more with it.
+
+## 6i. Teams of 10 weaken the thing you are measuring
+
+Team size 5–10 is a wider range than earlier drafts assumed, and the two ends behave
+differently in a way the report must not flatten.
+
+In a team of 10 doing a build or physical activity, three people typically do the work and
+seven watch. The derangement still produces exactly one rating per person, so `n` looks
+identical — but a rating from one of nine teammates is less grounded than one from one of
+four. The number carries the same confidence interval and deserves less trust.
+
+Detail and the explicit trade in
+[03](03-team-formation.md#team-size-5-10-changes-two-things). The practical rule: carry a
+caveat on individual findings wherever team size exceeded 8, and pick team size by what the
+client bought — teams of 10 for a mixing day, teams of 5 for anything that claims to say
+something about individuals.
+
+## 6j. The impressive-report trap
+
+More charts and matrices will make a report look more substantial. It will not make it more
+true, and the two come apart quickly.
+
+The four analyses in [13](13-client-report.md) each answer a question a client actually
+asked, and each rests on enough data to say something. A fifth added for density weakens
+those four, and an L&D buyer who knows statistics will spot padding immediately — at which
+point the credible findings get discounted alongside the filler.
+
+The counter-intuitive move is the strongest one available: a section stating plainly what
+the data cannot support. "Four ratings per person is not enough to rank individuals, so here
+is what we can say about the group" is the sentence that makes a sceptical buyer trust
+everything else in the document.
+
 ## 7. Legal and regulatory
 
 Peer evaluations of named individuals are personal data, and NRICs are personal
@@ -258,6 +310,9 @@ needs to be written down before someone asks.
 
 Decide with the client who is controller (recommended: the client company; you
 are processor) and get it into the engagement terms.
+
+Photos add a consent obligation at capture and a deletion obligation at the end of the
+programme. Both are specified; both need to actually run.
 
 One note on the currency: it is a points ledger that converts to physical tokens at
 a counter and is spent on site the same day. It is not stored value, it is not

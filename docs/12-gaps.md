@@ -1,7 +1,37 @@
 # 12 — Known Gaps
 
-An audit of what the preceding documents do not address. Ordered by what it would
-cost to discover late rather than by how interesting it is.
+An audit of what the preceding documents did not address, ordered by what it would cost to
+discover late. **All ten items have now been decided** — the resolutions are below, and each
+has been written into the relevant document.
+
+| | Gap | Decision |
+|---|---|---|
+| **A** | Which product is the business? | Build all three; decide at the pilot, with a structured debrief so the decision actually happens |
+| **B** | Parallel stations | A `round` **is** one activity. Parallel stations share a `session`. Team size moves to the activity |
+| **C** | Multiple facilitators | One operator, maximum automation. No concurrency work needed |
+| **D** | Bahasa Malaysia | BM + English for participants; English facilitator app |
+| **E** | No-phone participants | **No provision** — excuse them instead. Accepted risk |
+| **F** | Paper fallback | **None.** Accepted risk; the display board still renders from cache |
+| **G** | Device failure at the counter | Lease with expiry + explicit takeover |
+| **H** | Facilitator observation | Per-team teamwork rating + "notice this person", with participant **photos** |
+| **I** | Free analytics | All four, as the client report — see [13](13-client-report.md) |
+| **J** | Smaller items | Participation-only awards **yes**; **activity library + itinerary paste** instead of duplicate-event; baseline and in-event export **no** |
+
+Two items grew beyond the original question. **H** produced participant photos, which also
+solve the two-John-Lims problem at the redemption counter. **J** replaced a
+"duplicate last event" flow with a reusable **activity library** — activities recur with the
+same name and the same fixed team size, so the library supplies both and an itinerary paste
+assembles the day by reference. That is a better fit for a business where every client's day
+differs, and it moved team size from the event to the activity.
+
+### Accepted risks, stated plainly
+
+**E** and **F** are both conscious "no". Their real cost is smaller than it looks: a
+participant with no usable phone can be excused, so they lose no currency and take no
+engagement penalty — their teammates simply lose one rating each round. And with no paper
+fallback, the worst case is "no evaluations this round" rather than "no teams", because the
+facilitator display board renders from cached state. Neither is free, and both are reasonable
+given who the audiences are.
 
 ---
 

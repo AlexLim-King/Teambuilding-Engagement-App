@@ -26,6 +26,11 @@ with 4 minutes to get started.
   into two lines. Anyone the import couldn't determine is flagged for me to tag
   before the event.
 - **F3** I create an event with a short join code and a QR code I can project.
+- **F3b** I paste the day's itinerary and drop in the namelist, and the app creates the
+  session and activity structure for me — I confirm and adjust rather than building it
+  from scratch for every client.
+- **F3c** I mark which activities are non-competitive, so they use a flat
+  participation award instead of needing a winner.
 - **F4** I see, live, who has joined and who has not, so I can chase stragglers.
 - **F5** I press one button to form teams for the next round, and I can see the
   proposed teams *before* they go live.
@@ -52,14 +57,20 @@ with 4 minutes to get started.
   they return.
 - **F13** When someone genuinely cannot catch up at all, I excuse that round in one
   tap — it releases their currency and never counts against their engagement.
-- **F14** I finalise a round when the room has moved on for good, which closes
+- **F14** After an activity I give the team a quick 1–5 read on how well they worked, and
+  I can flag any individual with a note — with their photo beside their name so I can put
+  a face to who deserves credit.
+- **F15** I finalise a round when the room has moved on for good, which closes
   catch-up and forfeits unreleased currency. Until then people can still complete
   what they missed without me doing anything.
 
 ### Participant
 
 - **P1** I open a link or scan a QR code — no download, no login, no app store.
-- **P2** I type "ali" and pick "Alina Tan (Finance)" from an autocomplete list.
+- **P2** I type "ali" and pick "Alina Tan (Finance)" from an autocomplete list, in
+  English or Bahasa Malaysia.
+- **P2b** I can take a photo of myself so the coach knows who I am — or skip it, with
+  nothing lost either way.
 - **P3** I see my team number in large type, and the names of my teammates.
 - **P4** When the coach triggers it, a prompt appears asking me to rate one named
   teammate on three criteria, 1–5.
@@ -81,6 +92,9 @@ with 4 minutes to get started.
 ### Roster and identity
 - **R1** Import roster from CSV/XLSX. Required column: `name`. Optional:
   `department`, `gender`, `nric`, `is_leadership`, `employee_ref`, `email`, `notes`.
+- **R1a** Itinerary import: paste the day's run-sheet, the app extracts times and
+  activity names, and the facilitator confirms which rows are evaluated activities and
+  which are breaks. Sessions are created for activities that overlap in time.
 - **R1b** Where an NRIC column is present, derive gender from the final digit
   (odd = male, even = female), show the derived split in the import preview, and
   **discard the number** — never persisted, never transmitted, never on a device.
@@ -170,6 +184,21 @@ stored as an authoritative number; every action is reversible; redemption uses a
 compare-and-set and is restricted to one device per window; balances persist for
 the life of a programme.
 
+### Photos, observation, language
+
+- **R24** Optional participant photo, self-captured at join or imported from the roster
+  where a client supplies one. Resized on-device before upload, upload non-blocking,
+  skippable with no effect on currency, participation or engagement score.
+- **R25** Photos are facilitator-view only, never sent to another participant's device,
+  never in a client export, deleted with the programme.
+- **R26** Facilitator per-team teamwork rating (1–5) per activity, plus a "notice this
+  person" flag with an optional note.
+- **R27** Participant flow available in Bahasa Malaysia and English, selected at join.
+  Facilitator app English only.
+- **R28** Non-competitive activities use a flat participation award.
+- **R29** The redemption counter claim is a lease with expiry, renewed while in use, with
+  explicit takeover from another device.
+
 ## Non-functional requirements
 
 | # | Requirement | Target |
@@ -180,7 +209,8 @@ the life of a programme.
 | N4 | Smallest supported viewport | 320 × 360 CSS px (watch-browser class) |
 | N5 | Minimum tap target | 44 × 44 CSS px |
 | N6 | Contrast | WCAG AA, and legible in direct sunlight (outdoor events) |
-| N7 | Concurrent participants per event | 300 |
+| N7 | Concurrent participants per event | 300 (typical 40–80) |
+| N7b | Photo upload | ≤60KB per participant after on-device resize |
 | N8 | Sync convergence after connectivity returns | < 10 s |
 | N9 | Data retention | 90 days identified, then aggregate-only (configurable) |
 | N10 | Accessibility | Keyboard reachable, screen-reader labelled, no colour-only meaning |

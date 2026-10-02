@@ -92,8 +92,15 @@ fits without scrolling.
 
 ### Screen notes
 
+**P-1b Photo (optional).** After picking their name, one tap to take a photo so the coach
+can put a face to the name, and an equally prominent **Skip**. Resized on-device before
+upload, upload non-blocking. Skipping costs nothing — not currency, not participation, not
+engagement score — and the screen says so, because some people will decline for personal or
+religious reasons and must not be left wondering what it cost them.
+
 **P-2 Name.** The single highest-risk screen: 60 people doing this at once, in
 the first two minutes, sets the tone for the whole product.
+- Language toggle (BM / English) sits here, before anything else is read.
 - Match on any token, case- and accent-insensitive: "tan" finds "Alina Tan"; "ali"
   finds her too.
 - Always show department beside the name — it is what disambiguates the three
@@ -151,19 +158,58 @@ Sync is the app's problem, not theirs.
 ## Facilitator flow
 
 ```
-  F-1 Events list ──► F-2 Event setup ──► F-3 Round planner ──► F-4 Live round ──► F-5 Analytics
-                       roster import        team size, count      join board          scores
-                       criteria template    coverage forecast     form / review       nominations
-                       leadership flags     seed                  commit              coverage
-                       gender tagging       payout preset         open evaluation     export
-                                                                  record result
-                                                                  award currency
-                                                                        │
-                                                                        ▼
-                                                                  F-6 Redemption counter
+  F-1 Events list ──► F-2 Event setup ──────► F-3 Day planner ──► F-4 Live activity ──► F-5 Analytics
+                       itinerary paste         confirm activities   join board            engagement
+                       activity library        coverage forecast    form / review         nominations
+                       roster import           payout preset        commit                coverage
+                       gender tagging          seed                 open evaluation       report
+                       criteria template                            record result
+                       leadership flags                             award currency
+                                                                    team observation
+                                                                          │
+                                                                          ▼
+                                                                    F-6 Redemption counter
 ```
 
-**F-2 Event setup — roster import.** Drag a CSV or XLSX in. The importer must
+**F-2 Event setup — itinerary paste.** The fastest path into a configured day, and the
+screen that most serves "most decisions automated". Paste the run-sheet you already write
+for every event:
+
+```
+┌──────────────────────────────────────────────┐
+│ Paste the day's itinerary                    │
+│ ┌──────────────────────────────────────────┐ │
+│ │ 0900  Welcome & briefing                 │ │
+│ │ 0930  Ice Breaker Circle                 │ │
+│ │ 1000  Blindfold Maze                     │ │
+│ │ 1100  Tower Build                        │ │
+│ │ 1230  Lunch                              │ │
+│ │ 1400  Raft Race                          │ │
+│ └──────────────────────────────────────────┘ │
+│                                              │
+│ Found 4 activities, 2 breaks                 │
+│                                              │
+│ ✓ Ice Breaker Circle   teams of 8 · library  │
+│ ✓ Blindfold Maze       teams of 5 · library  │
+│ ✓ Tower Build          teams of 10 · library │
+│ ? Raft Race            not in library  [add] │
+│ – Welcome & briefing   not an activity       │
+│ – Lunch                not an activity       │
+│                                              │
+│            [ Build the day ]                 │
+└──────────────────────────────────────────────┘
+```
+
+Time patterns in run-sheets are highly regular, so extracting `HH:MM` plus a title needs
+no cleverness and no external service. Names are fuzzy-matched against the activity
+library, which supplies team size, competitiveness and duration; anything unmatched is one
+tap to add, so the library builds itself through ordinary use. Rows whose times overlap
+become one session automatically.
+
+Everything is editable in the preview. The screen configures the day; the facilitator
+confirms it.
+
+**F-2b Roster import.** Drag a CSV or XLSX in. The importer must
 show a mapping preview (which column is the name? the department? the NRIC?) and
 a warning list before committing: duplicate names, blank departments,
 unrecognised leadership values. Real client namelists are messy; an importer that
@@ -181,14 +227,15 @@ show a client who asks what you did with their staff ID numbers. The 2 unreadabl
 rows appear in a **Needs tagging** list with male / female / unspecified buttons —
 a few taps, done once, before the event.
 
-**F-3 Round planner — the coverage forecast.** As the facilitator adjusts team
-size and number of rounds, show the live arithmetic from
+**F-3 Day planner — the coverage forecast.** Team sizes come from the activities, so the
+planner shows what the planned day actually reaches and what changing an activity's size
+would do. Show the live arithmetic from
 [03](03-team-formation.md#the-coverage-ceiling---tell-the-facilitator-this-up-front):
 
-> 48 people · teams of 6 · 4 rounds
-> **Each person will meet at most 43% of the room.**
-> 10 rounds would be needed for everyone to meet everyone.
-> *Larger teams or more rounds increase this.*
+> 60 people · 4 activities · teams of 8, 5, 10, 6
+> **Each person will meet at most 42% of the room.**
+> All four at teams of 10 would reach 61%.
+> *Larger teams raise coverage and weaken individual ratings — see docs/03.*
 
 This one panel does more for the client relationship than any algorithm, because
 it replaces a promise you cannot keep with a number you can plan around.
@@ -204,6 +251,9 @@ it replaces a promise you cannot keep with a number you can plan around.
 
   "0 repeat evaluations" is the line that answers the question participants
   actually ask, so it is stated every round rather than assumed.
+- **After the activity**, one card: a 1–5 read on how the team worked, plus any
+  individual to flag with a note. Participant photos appear beside names throughout, which
+  is what makes "who deserves credit" answerable at speed in a room of 60.
 - **Commit** publishes teams and rating assignments.
 - **Open evaluation** → live counter `41 / 48 submitted`, with names of who hasn't,
   so the coach can nudge the room. Close manually or on a timer.

@@ -25,9 +25,11 @@
 Organisation
   └── Roster ──── RosterPerson
   └── EventTemplate (criteria, nomination questions, weights)
+  └── ActivityLibrary ──── ActivityDefinition (name, team size, competitive?)
   └── Programme                       (multi-day; owns the currency)
         ├── ProgrammeParticipant ──── CurrencyLedger (append-only)
         └── Event
+              └── Session      (a time block; groups rounds running in parallel)
         ├── Participant        (a RosterPerson claimed on a device)
         ├── PendingAward       (earned, not yet released — gated on submission)
         ├── Round
@@ -66,6 +68,7 @@ balances die with it. Full currency schema in [10](10-currency.md#entities).
 | `is_leadership` | bool | Drives the separation constraint |
 | `employee_ref` | text null | **Never sent to participant devices** |
 | `email` | text null | **Never sent to participant devices** |
+| `photo_asset_id` | uuid null | Optional. Facilitator-view only — see below |
 
 There is deliberately **no `nric` column**. Where a client namelist carries
 Malaysian NRICs, the importer parses them in the browser, derives `gender` from
@@ -115,13 +118,65 @@ own submissions." Losing a phone means asking the facilitator to re-claim; that
 is a one-tap action on the facilitator screen and is the right trade for not
 making 60 people invent passwords.
 
+### Terminology: round, activity, session
+
+**A `round` is one activity** — one thing a set of teams did, evaluated at the end.
+That is the unit everything hangs off: teams, results, awards, the evaluation window,
+the nomination question.
+
+Where stations run in parallel — teams 1–4 at the rope course while 5–8 build a tower
+— those are **two rounds sharing one `session`**. A session is just a time block. It
+exists for exactly one reason: team formation allocates everyone across a session's
+rounds in a single pass, so nobody is placed in two simultaneous activities.
+
+For a conventional sequential day, each round is its own session and the concept is
+invisible. Parallel stations then need no special handling anywhere else in the system.
+
+### `activity_definition` — the activity library
+
+Activities recur with the same name and the same fixed team size. So they live in a
+reusable library per organisation, and the day's configuration is assembled by reference
+rather than retyped.
+
+| column | type | notes |
+|---|---|---|
+| `id` | uuid pk | |
+| `organisation_id` | uuid fk | Shared across that client's events, or global to you |
+| `name` | text | "Blindfold Maze" |
+| `normalised_name` | text | For fuzzy-matching an itinerary line against the library |
+| `default_team_size` | int | **The fixed format for this activity** |
+| `min_team_size`, `max_team_size` | int | Where the activity tolerates a range |
+| `is_competitive` | bool | False → participation-only award |
+| `default_duration_minutes` | int null | Helps lay out an itinerary |
+| `payout_override` | jsonb null | Where a particular activity pays differently |
+| `notes` | text null | Facilitator's own reminders |
+| `times_used` | int | Frequently used activities sort first |
+
+This is what makes itinerary import worth building. The paste extracts times and names;
+the library supplies team size, competitiveness and duration; the facilitator confirms
+rather than configures. Unmatched names are offered as "add to library", so the catalogue
+builds itself through ordinary use rather than needing a setup session.
+
+### `session`
+| column | type | notes |
+|---|---|---|
+| `id` | uuid pk | |
+| `event_id` | uuid fk | |
+| `sequence` | int | |
+| `label` | text | "Session 2 · 10:30–11:15" |
+| `starts_at`, `ends_at` | timestamptz null | From the itinerary import |
+
 ### `round`
 | column | type | notes |
 |---|---|---|
 | `id` | uuid pk | |
 | `event_id` | uuid fk | |
+| `session_id` | uuid fk | Rounds sharing a session run simultaneously at different stations |
 | `sequence` | int | 1, 2, 3 … |
-| `activity_name` | text | "Blindfold Maze" |
+| `activity_definition_id` | uuid fk null | From the library; null for a one-off |
+| `activity_name` | text | Resolved from the library, or typed for a one-off |
+| `team_size` | int | **Resolved per activity**, not per event — a library default the facilitator can override for this run |
+| `is_competitive` | bool | From the library; overridable |
 | `nomination_question_key` | text | Drawn from the rotating bank at round creation — see [09](09-question-bank.md) |
 | `state` | enum | `planned` `teams_formed` `active` `evaluating` `closed` |
 | `evaluation_opened_at` | timestamptz null | |
@@ -215,6 +270,54 @@ useful of the two signals and the cheaper.
 Storing nominations as rows keyed by `question_key` (rather than columns) means
 adding a fourth question is a template edit, not a schema migration.
 
+### `participant_photo`
+
+| column | type | notes |
+|---|---|---|
+| `id` | uuid pk | |
+| `participant_id` | uuid fk | |
+| `source` | enum | `self_capture` \| `roster_import` |
+| `storage_key` | text | Object storage, not the database |
+| `captured_at` | timestamptz | |
+
+Photos exist so a facilitator can put a face to a name when giving credit — and they
+incidentally solve the two-John-Lims problem at the redemption counter, which
+previously had only a weak answer.
+
+Rules, all of which matter more than the feature:
+
+- **Optional and skippable, with no consequence.** Some participants will decline for
+  personal or religious reasons. A skip must never affect currency, participation, or
+  the engagement score — and the currency gate in particular must not depend on it.
+- **Facilitator view only.** Never sent to another participant's device. A photo
+  directory of all staff on sixty phones is a different and much worse product than
+  the one being built.
+- **Resized on the device before upload** — longest edge 512px, JPEG quality ~0.7,
+  target under 60KB. Sixty full-resolution phone photos is 100MB+ of upload over venue
+  wifi for no benefit.
+- **Upload is non-blocking.** It queues in the outbox like anything else; if it never
+  succeeds, there is simply no photo.
+- **Deleted with the programme**, ahead of everything else. A face is the most
+  identifying thing in this system.
+- **Never in any client export.**
+
+### `facilitator_observation`
+
+| column | type | notes |
+|---|---|---|
+| `id` | uuid pk | |
+| `round_id` | uuid fk | |
+| `team_id` | uuid fk null | Set for a team rating |
+| `participant_id` | uuid fk null | Set for a "notice this person" flag |
+| `teamwork_rating` | smallint null | 1–5, facilitator's own read on how the team worked |
+| `note` | text null | Free text |
+| `created_by` | uuid fk | |
+
+The only data in the system not sourced from participants. Independently sourced, so
+it can be checked against the peer measures the same way win records can — two
+independent sources agreeing is far stronger evidence than one source being
+internally consistent.
+
 ### `event_template`
 Holds the configurable question set, so a facilitator can run a leadership
 programme and a company family day from the same app.
@@ -234,7 +337,7 @@ programme and a company family day from the same app.
   ],
   "nomination_rotation": { "one_per_round": true, "no_repeat_tag_consecutively": true },
   "formation": {
-    "target_team_size": 5,
+    "target_team_size": 5,          // fallback only — the activity supplies the real one
     "max_leaders_per_team": 1,
     "gender_pattern": "even_spread",       // vs "avoid_solo"; see docs/00
     // Balance-first priority. Reordering these changes the emphasis per client.
@@ -242,6 +345,10 @@ programme and a company family day from the same app.
       "gender_balance": 25.0, "same_department": 15.0, "repeat_pair": 10.0,
       "leader_repeat": 8.0, "size_balance": 5.0, "hard_violation": 1000.0
     }
+  },
+  "awards": {
+    "preset": { "1st": 50, "2nd": 40, "3rd": 30, "rest": 20 },
+    "participation_only": 25        // non-competitive activities: flat, everyone who took part
   },
   "reporting": {
     "min_n_to_display": 3,

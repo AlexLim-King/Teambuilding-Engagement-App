@@ -36,7 +36,8 @@ architecture only — no application code yet. Read the docs in order:
 | 09 | [Question bank](docs/09-question-bank.md) | The rotating nomination questions and why they rotate |
 | 10 | [Results & currency](docs/10-currency.md) | Recording wins, the earnings ledger, and cashing out at the counter |
 | 11 | [Mid-event changes](docs/11-mid-event-changes.md) | Someone leaves or returns mid-event, and what it touches |
-| 12 | [**Known gaps**](docs/12-gaps.md) | **What these documents do not yet address, ranked by cost of finding it late** |
+| 12 | [Gap audit](docs/12-gaps.md) | The gap audit and what was decided for each item |
+| 13 | [Client report](docs/13-client-report.md) | The four analyses, what they say, and how they mislead |
 
 Start with **00-decisions.md** — it lists the questions that still need your
 answer before code is worth writing.

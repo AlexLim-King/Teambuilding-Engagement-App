@@ -232,6 +232,35 @@ The number to watch is the trend. If straight-lining climbs after the currency g
 goes in, the gate is buying completion at the cost of signal, and the fix is in the
 reward size or the question wording, not in enforcement.
 
+## Team size affects rating quality, not rating count
+
+At the real event shape — teams of 5–10 — the derangement still guarantees exactly one
+rating per person per round, so `n` is identical whatever the team size. What differs is
+how well-grounded each rating is: a rater who was one of four teammates saw more of the
+person than one of nine.
+
+So team size trades coverage against measurement quality, and the trade is explicit in
+[03](03-team-formation.md#team-size-5-10-changes-two-things). Nothing in the scoring model
+needs to change for it, but the report should not claim equal confidence across both: a
+teams-of-10 event produces weaker individual signal than a teams-of-5 event with the same
+`n`, and the facilitator view should carry that caveat where team size exceeded 8.
+
+## Facilitator observation as an independent check
+
+The facilitator's per-team teamwork rating is the only measure in the system not produced
+by participants, which makes it useful out of proportion to its volume. Alongside win
+records it gives **two independent sources** to check the peer measures against — and two
+independent sources agreeing is far stronger evidence than one source being internally
+consistent.
+
+The check to run, once enough events exist: does a facilitator's read on how well a team
+worked correlate with that team's mean peer `support` rating? If it does, the peer measure
+is picking up something a trained observer also sees. If it does not, one of the two is
+not measuring teamwork, and that is worth knowing before a client is told either number
+means anything.
+
+Single-event power is low — a handful of teams per round. It accumulates.
+
 ## Precision weighting (v2)
 
 A rater who gives 5,5,5,5 conveys almost no information; a rater whose ratings

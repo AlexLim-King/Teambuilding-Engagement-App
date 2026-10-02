@@ -4,6 +4,8 @@
 
 | Layer | Choice | Why |
 |---|---|---|
+| Photo storage | **Object storage (S3-compatible), not the database** | Sixty images per event; a database is the wrong place for them. Served to the facilitator view through signed, short-lived URLs |
+| i18n | **Plain JSON message catalogues**, no framework | The participant flow is ~40 strings. A library would outweigh the content |
 | UI | **React 18 + TypeScript + Vite** | Small, fast builds; the participant route can be code-split to well under the 150 KB budget |
 | Styling | **CSS modules + custom properties** | No runtime cost, no framework weight; the watch/phone breakpoints are a handful of media queries |
 | Local store | **IndexedDB via Dexie** | Survives reloads and tab kills; the outbox pattern needs a real transactional store, not localStorage |
@@ -73,6 +75,12 @@ designated counter device per window, so two disconnected devices cannot both ta
 the same person to zero. It costs nothing operationally — cashing out happens at
 one physical counter — and it removes the only genuinely dangerous race in the
 system.
+
+**The claim is a lease, not a lock.** It carries an expiry (default 5 minutes) renewed
+while the device is actively redeeming. A device that dies releases it automatically
+rather than stranding the queue, and another device can take over explicitly: *"Siti's
+device holds the counter — take over?"* Without the lease, a flat battery at the counter
+stops redemption for the rest of the event.
 - **Clock independence.** Ordering uses `(client_seq, received_at)`, never the
   device clock (see [02](02-data-model.md#submission)).
 
@@ -119,6 +127,9 @@ returns another participant's financial state to a participant device.
 
 ```http
 POST /participants/{id}/status        mark left / returned (facilitator, offline-safe)
+POST /participants/{id}/photo         optional, resized on device, non-blocking
+POST /events/{id}/itinerary           paste a run-sheet → proposed sessions + activities
+POST /rounds/{r}/observations         facilitator team rating / notice-this-person flag
 POST /events/{joinCode}/claim
      { deviceToken, rosterPersonId | walkInName }
   →  { participantId, event, template, roster[], currentRound }
@@ -178,11 +189,12 @@ heavily tested code in the project.
 
 ```
 packages/
-  core/            # pure TS: formation, bias model, nomination stats, CSV parsing
+  core/            # pure TS: formation, bias model, nomination stats, CSV + itinerary parsing
     formation/
     scoring/
     roster/
     ledger/        # balance arithmetic, reversal logic — integers only
+    itinerary/     # parse a pasted run-sheet into sessions and activities
   web/             # React PWA — both interfaces, code-split by role
     participant/
     facilitator/

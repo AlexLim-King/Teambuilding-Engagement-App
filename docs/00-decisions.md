@@ -32,6 +32,42 @@
 | Stating a motive | **Never.** Every surface says "did not submit", never "refused" | A refusal and a flat battery are identical in the data. The facilitator was in the room; the app supplies the count, not the interpretation. |
 | Departed members and awards | **Always included** if they were on the team when the round started | Avoids penalising illness; the amounts are not worth adjudicating. |
 
+## Decisions from the gap audit
+
+| Decision | Choice | Consequence |
+|---|---|---|
+| Product focus | **All three — ops tool, engagement mechanic, analytics — built and judged at the pilot** | Nothing is deprioritised. See the note below on how "decide after the pilot" actually gets decided. |
+| Unit of evaluation | **The activity.** A `round` *is* one activity; where stations run in parallel, several rounds share a `session` | Parallel stations need no special handling — they are rounds whose times overlap. Formation allocates across a session in one pass. |
+| Facilitator count | **One operator**, with as much automated as is safe | No concurrent-write work needed. Sets a design rule: every facilitator tap must justify itself. |
+| Participant language | **BM + English**, picked at join. Facilitator app English | ~40 strings. Removes the risk that a language barrier reads as disengagement in the report. |
+| No-phone participants | **No provision.** Excuse them instead | Accepted risk. They lose no currency and take no engagement hit; their teammates lose one rating each round. |
+| Paper fallback | **None** | Accepted risk. The display board renders from cache, so the worst case is "no evaluations this round", not "no teams". |
+| Counter device failure | **Lease with expiry + explicit takeover** | A dead phone releases the redemption lock automatically instead of stopping the queue. |
+| Facilitator observation | **Quick per-team rating after each activity + a "notice this person" flag**, with participant photos to make it fast | The only non-peer data source, so it also validates the peer measures. |
+| Participant photos | **Self-capture at join** (primary), roster import where a client supplies them (secondary) | Optional and skippable, facilitator-only, never shown to other participants. Also solves the two-John-Lims problem at the counter. |
+| Event setup | **Paste the day's itinerary + drop the namelist** | Replaces a "duplicate last event" flow. Fits "most decisions automated" and handles the fact that every client's day differs. |
+| Non-competitive activities | **Participation-only award path** | A flat amount to everyone who took part, so the currency gate still works where there is no winner. |
+| Client report | **Four aggregate analyses** — round-over-round trend, department bridges, leader present vs absent, straight-lining rate | All derivable from data already collected, all team-or-event level, so they sit inside the existing "no per-person scores to the client" posture. |
+| Not building | In-event export · pre-event baseline · proxy entry · paper slips · duplicate-event · multi-facilitator concurrency | Each a conscious decision, recorded in [12](12-gaps.md). |
+
+### Event shape — the blocker is closed
+
+**Events that want a report: 40–80 participants, teams of 5–10.** Round count not yet
+fixed; the M1 study will run 3, 4 and 6 rounds across team sizes 5, 8 and 10 and
+report what is statistically supportable at each, so a client can be told up front
+what their configuration will and will not support.
+
+Team size 5–10 is wider than earlier drafts assumed and has two real consequences,
+both in [03](03-team-formation.md#team-size-5-10-changes-two-things).
+
+### Making "decide after the pilot" an actual decision
+
+Choosing all three products equally is reasonable, but "decide after the pilot" is the
+kind of decision that silently never happens. So the pilot gets an explicit step: a
+structured debrief recording **which part the client reacted to** — the smooth day,
+the currency mechanic, or the report — and what they asked about unprompted. Without
+that, M5 arrives with the same three-way ambiguity and no new information.
+
 ## The trade you just made: balance first
 
 "Balance wins" and "everyone should meet everyone" pull against each other, and it
@@ -93,10 +129,9 @@ The rules baked into the spec:
 
 ## Open questions, and one settled consequence
 
-1. **Event shape.** Typical headcount? Rounds per event (2? 4? 8?)? Team size
-   (4? 5? 6?)? These set the statistical power of every number the app reports,
-   and they determine whether individual scores are reportable at all. **Still the
-   single thing blocking the first build.**
+1. **Rounds per event.** Headcount (40–80) and team size (5–10) are settled;
+   the number of activities per day is not. Not blocking — the M1 study covers 3, 4
+   and 6 — but your typical figure would sharpen the recommendation.
 
 2. **Longitudinal tracking of *scores*.** Balances now persist across a programme
    ([10](10-currency.md)), which settles identity *within* a programme. Still open:
