@@ -103,6 +103,13 @@ the first two minutes, sets the tone for the whole product.
 - "I'm not on the list" at the bottom → free-text name + department picker, and
   the person is flagged as a walk-in for the facilitator (R5).
 
+**Withdrawn state.** A participant marked as left sees a terminal screen —
+*"You've been marked as left. Thanks for joining us."* — rather than a stale team
+number for an activity that is not coming. Marked returned, it reverts to normal on
+next sync. This is the only participant screen that exists purely because of
+[11](11-mid-event-changes.md); everything else about withdrawal is handled on the
+facilitator's device.
+
 **P-4 My Team.** This screen exists to be readable at arm's length in a noisy
 room. The team number is enormous; everything else is secondary. It is also the
 screen most people will have open when the wifi is worst, so it renders entirely
@@ -189,6 +196,15 @@ it replaces a promise you cannot keep with a number you can plan around.
 - **Commit** publishes teams and rating assignments.
 - **Open evaluation** → live counter `41 / 48 submitted`, with names of who
   hasn't, so the coach can nudge the room. Close manually or on a timer.
+
+**F-4 Live round — marking someone out.** Every participant row on the join board
+carries a **Mark as left** action, and withdrawn rows carry **Mark as returned**.
+No dialog, no reason required, no confirmation — in the moment someone is being
+walked to a first-aid room, a confirmation step is an obstacle. It is reversible,
+which is what makes skipping the confirmation safe.
+
+Withdrawn participants show greyed on the board with the time they left, so a
+facilitator glancing at "41 of 48 joined" can see the denominator moved and why.
 
 **F-6 Redemption counter.** Opened at a fixed time, on one designated device. A
 searchable list of everyone with a balance, largest first, with the participant's

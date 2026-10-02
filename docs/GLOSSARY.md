@@ -83,6 +83,10 @@ team lists against your own judgement before anything is dressed up.
 | **Ceiling effect** | Everyone scoring 4s and 5s, so real differences get squashed. Normal in friendly settings; fixed by question wording, not by maths. |
 | **Halo effect** | One overall impression bleeding into all three criteria, so they measure the same thing. |
 | **Connected rating graph** | Enough overlap in who-rated-whom that everyone's scores are on the same scale. If the room split into two groups that never rated across, their numbers aren't comparable — the app checks for this. |
+| **Imputation** | Filling a missing value with an estimate, usually the average. Deliberately *not* used here — it would report that 4 people rated someone when only 3 did. Shrinkage does the same job honestly. |
+| **Completion** | How many of their assigned evaluations someone actually submitted ("3 of 4"). Reported next to the score, never subtracted from it. |
+| **Pull-only** | The participant's phone asks the server for a value when needed, rather than holding its own copy. How balances work, so no phone ever shows an authoritative-looking stale number. |
+| **Withdrawn / returned** | A participant marked as having left, and marked back in. Reversible, and returning keeps their history so it is not a loophole around the no-repeat rules. |
 | **Property test** | A test asserting a rule always holds ("no one is ever assigned to rate the same person twice") across thousands of random cases, rather than checking one example. |
 
 ---

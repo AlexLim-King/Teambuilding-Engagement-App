@@ -63,6 +63,7 @@ mutable and contested rather than an immutable fact. It is specified in full in
 |---|---|---|
 | Shape | Immutable facts | Append-only ledger, balance derived |
 | Offline writes | Always safe | **Awards** safe (additive); **redemptions** are not |
+| Participant reads | Cached, works offline | **Pull-only**, requires connection; stale figures labelled "as of" |
 | Conflict model | None possible | Compare-and-set on redemption + single designated writer per window |
 | Correction | N/A — never changes | Compensating `reversal` entry, never an edit |
 | Numeric type | smallint 1–5 | **Integer units only** — no float ever touches currency |
@@ -117,6 +118,7 @@ Returns only the caller's own balance and history — there is no endpoint that
 returns another participant's financial state to a participant device.
 
 ```http
+POST /participants/{id}/status        mark left / returned (facilitator, offline-safe)
 POST /events/{joinCode}/claim
      { deviceToken, rosterPersonId | walkInName }
   →  { participantId, event, template, roster[], currentRound }
@@ -150,9 +152,15 @@ teams before they go live") and R6 (manual override) possible.
 ## Where the algorithms run
 
 Currency is the exception to the "runs on the device" rule below: balances are
-**always computed server-side** from the ledger and never trusted from a client. A
-device shows a cached balance for responsiveness, clearly marked as of its last
-sync, but the number that governs a redemption comes from the server.
+**always computed server-side** from the ledger and never trusted from a client.
+
+The participant side is **pull-only**: a phone requests its balance when the
+participant opens that screen, and shows it only if the request succeeds. With no
+connection it shows the last known figure with an explicit "as of" time, or nothing
+at all if it has never fetched one. No authoritative balance ever lives on a
+participant device, so there is no offline currency logic to get wrong and no risk
+of someone arriving at the counter believing a stale number. The facilitator's
+connected device and the server are the only sources of truth.
 
 Team formation and score adjustment both run **on the facilitator's device**, in
 TypeScript, as pure functions over plain data. Reasons:

@@ -20,6 +20,11 @@
 | Redemption | Facilitator hands over **physical currency** at a counter and taps Redeemed, zeroing the balance | No in-app shop, no catalogue, no stock. One designated device per redemption window. |
 | Balance lifetime | **Persists across a multi-day programme**, dies with the programme | Introduces a `programme` entity above `event`. |
 | Balance visibility | **Own balance and own earning history only** | No leaderboard; no participant device holds anyone else's financial state. |
+| Currency source of truth | **Server, read through the facilitator's connected device.** Participants pull their balance on demand | No authoritative balance ever lives on a participant device, so there is no offline currency logic and no stale-balance trap. |
+| Mid-event withdrawal | **One tap on the facilitator device**, reversible; next round forms without them | Safe offline — a status change is facilitator-owned and additive. See [11](11-mid-event-changes.md). |
+| Missing ratings | **Never imputed.** `n` simply drops and shrinkage absorbs it | Imputing an average would report a false `n` and compress real differences. Scope reduction, not an omission. |
+| Non-completion | **Tracked as its own field, not subtracted from the score.** The consequence lands on currency instead | A score that mixes in compliance no longer means what its label says, and the usual cause of a missed evaluation is illness. Overridable via `reporting.completion_penalty`, off by default. |
+| Departed members and awards | **Always included** if they were on the team when the round started | Avoids penalising illness; the amounts are not worth adjudicating. |
 
 ## The trade you just made: balance first
 

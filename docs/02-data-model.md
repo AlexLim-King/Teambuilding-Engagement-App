@@ -164,6 +164,7 @@ rates the same person twice across the event. See
 | `submitted_at` | timestamptz | **Device clock** — may be wrong, see below |
 | `received_at` | timestamptz | Server clock, set on ingest |
 | `client_seq` | int | Monotonic per device, for ordering when clocks lie |
+| `ratee_withdrawn` | bool | Set on ingest if the ratee was withdrawn by the time this arrived. Flagged, never rejected — see [11](11-mid-event-changes.md#one-principle-this-makes-explicit) |
 | unique | `(round_id, rater_participant_id)` | Enforces R18 |
 
 Device clocks are unreliable and are the classic offline-sync trap. `submitted_at`

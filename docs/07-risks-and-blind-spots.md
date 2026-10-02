@@ -166,10 +166,10 @@ Two residual risks worth naming:
   prevented — see
   [10](10-currency.md#if-the-wrong-person-is-cashed-out). This was an informed
   choice to keep the queue moving.
-- **Participants trusting a stale cached balance.** A phone offline since the
-  morning shows a number that may be short. The screen must carry an "as of" line,
-  and the server number is what governs the counter. Never let a participant
-  believe a cached figure is authoritative.
+- ~~**Participants trusting a stale cached balance.**~~ Resolved by design: the
+  participant balance screen is pull-only and requires a connection, so no
+  authoritative figure is ever held on a phone. A never-fetched balance shows
+  nothing rather than a guess.
 
 ## 6e. Currency can crowd out the thing it is meant to encourage
 
@@ -197,6 +197,24 @@ two cheap safeguards:
 
 The second point is only possible because the two systems are separate. It is a
 real argument for having kept them apart.
+
+## 6f. The temptation to penalise non-participation in the score
+
+Worth recording because the pressure to do this will recur, from clients as well as
+from the inside: someone does not complete their evaluations, so dock their score.
+
+It is the wrong lever, for a reason that is easy to state and easy to forget. The
+score claims to measure what teammates observed about a person's contribution.
+Subtract a compliance figure and it measures that *plus* app usage, while still
+carrying the old label — and the most common cause of a missed evaluation is the
+one case you least want to penalise, someone who went home ill. That number can
+end up in a coaching conversation.
+
+Completion is tracked as its own field beside the score, and the consequence lands
+on the currency, which is an engagement tool and makes no measurement claim. The
+override exists (`reporting.completion_penalty`, off by default) and labels any
+affected score so it is never silently different from what it claims to be. See
+[11](11-mid-event-changes.md#non-completion-tracked-not-subtracted).
 
 ## 7. Legal and regulatory
 

@@ -35,6 +35,7 @@ architecture only — no application code yet. Read the docs in order:
 | 08 | [Roadmap](docs/08-roadmap.md) | Build order and milestones |
 | 09 | [Question bank](docs/09-question-bank.md) | The rotating nomination questions and why they rotate |
 | 10 | [Results & currency](docs/10-currency.md) | Recording wins, the earnings ledger, and cashing out at the counter |
+| 11 | [Mid-event changes](docs/11-mid-event-changes.md) | Someone leaves or returns mid-event, and what it touches |
 
 Start with **00-decisions.md** — it lists the questions that still need your
 answer before code is worth writing.

@@ -55,6 +55,8 @@ lands with M3:
 - Redemption counter with compare-and-set, single designated device, and undo.
 - Participant balance screen with earning history.
 - `programme` grouping so balances survive to day 2.
+- Mark-as-left / mark-as-returned with history preservation
+  ([11](11-mid-event-changes.md)), plus the withdrawn-state participant screen.
 
 The ledger arithmetic itself ships in M1 as pure functions with the property tests
 from [10](10-currency.md#test-plan) — it is the kind of code that must be right

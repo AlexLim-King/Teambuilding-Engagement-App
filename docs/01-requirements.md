@@ -47,6 +47,9 @@ with 4 minutes to get started.
   room").
 - **F10** I export the event as CSV/XLSX for the client report.
 - **F11** The app keeps working when the venue wifi dies mid-event.
+- **F12** When someone falls ill or has to leave, I mark them inactive on my own
+  device and the next round forms without them — and I can mark them back in when
+  they return.
 
 ### Participant
 
@@ -100,6 +103,10 @@ with 4 minutes to get started.
   with no network.
 - **R12** Late arrivals and drop-outs can be added/removed between rounds without
   reshuffling everyone.
+- **R12b** Marking someone as left — and as returned — is one tap on the
+  facilitator device and works offline. Returning preserves their pairing and
+  rating history so it is not a loophole around the no-repeat guarantees. Full
+  spec in [11](11-mid-event-changes.md).
 
 ### Evaluation
 - **R13** Facilitator opens an evaluation window; it can be closed manually or on
@@ -120,7 +127,10 @@ with 4 minutes to get started.
 
 ### Analytics
 - **R19** Raw mean, bias-adjusted score, and a confidence indicator per person
-  per criterion. Full method in [04](04-scoring-and-bias.md).
+  per criterion. Missing ratings are never imputed — `n` drops and shrinkage
+  absorbs it.
+- **R19b** Evaluation completion ("3 of 4") is reported as its own field beside the
+  score, never folded into it. Full method in [04](04-scoring-and-bias.md).
 - **R20** Nomination index normalised by rounds played, aggregated overall and by
   trait tag (`LEAD` / `WORK` / `SOCIAL`). Per-question results shown as named
   highlights, never as scores.

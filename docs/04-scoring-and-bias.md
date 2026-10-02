@@ -113,6 +113,22 @@ without its n.** Below `min_n_to_display` (default 3) the app shows "insufficien
 data" and no number — an unavoidable rule, because a single rating dressed up as
 a score is how this product would damage someone's standing at work.
 
+## Missing ratings are not imputed
+
+When a rater leaves before submitting, their intended ratee ends the round one
+rating short. The fix is to do nothing: `n` drops, and the shrinkage above pulls
+that person's estimate slightly further toward the global mean — which is exactly
+what "assume average for the missing one" was trying to achieve, arrived at
+properly.
+
+Inserting a synthetic average rating instead would report `n = 4` where only three
+people rated, compress variance across the event, and leave invented numbers
+indistinguishable from observed ones. Reasoning in full at
+[11](11-mid-event-changes.md#why-a-missing-rating-needs-no-fix).
+
+Completion ("submitted 3 of 4") is reported as its own field beside the score and
+is never subtracted from it.
+
 ## Precision weighting (v2)
 
 A rater who gives 5,5,5,5 conveys almost no information; a rater whose ratings
