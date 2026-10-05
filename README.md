@@ -47,6 +47,7 @@ Built with Next.js on Vercel, Postgres and Auth on Supabase.
 | 12 | [Gap audit](docs/12-gaps.md) | The gap audit and what was decided for each item |
 | 13 | [Client report](docs/13-client-report.md) | The four analyses, what they say, and how they mislead |
 | 14 | [**Build plan**](docs/14-build-plan.md) | **Stage-by-stage build order, and how to run it on your laptop** |
+| 15 | [Brand](docs/15-brand.md) | Palette, type, and the two non-negotiable rules |
 
 Start with **00-decisions.md** — it lists the questions that still need your
 answer before code is worth writing.

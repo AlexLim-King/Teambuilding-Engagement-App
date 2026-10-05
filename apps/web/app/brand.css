@@ -1,40 +1,110 @@
 /* ──────────────────────────────────────────────────────────────────────────
-   Brand tokens — PLACEHOLDERS.
+   Core Apex — brand tokens.
 
-   Replace the five values marked TODO with the Core Apex palette. Everything
-   else derives from them, so this is the only file that needs editing.
-   Tailwind v4 reads @theme, so these become utilities (bg-brand, text-ink, …).
+   Sampled from the logo: the red gradient runs #6B0000 → #DC1B21 across
+   "CORE", set against pure black. Staff wear black polos with the mark on the
+   chest, which is the model for the app's chrome: black bars, white content,
+   red reserved for action.
+
+   Light base throughout. Participants use this outdoors in Malaysian sun,
+   where a near-white background at full brightness beats any dark theme.
+   See docs/15-brand.md.
    ────────────────────────────────────────────────────────────────────────── */
 
 @theme {
-  --color-brand:        #1f2937;  /* TODO primary */
-  --color-brand-dark:   #111827;  /* TODO primary, darker — hovers, headers */
-  --color-accent:       #0ea5e9;  /* TODO accent — the currency release, primary actions */
-  --color-ink:          #18181b;  /* TODO body text */
-  --color-surface:      #fafaf9;  /* TODO page background */
+  /* ---- Brand ---- */
+  --color-brand:        #DC1B21;  /* logo red — primary actions, currency, accents */
+  --color-brand-hover:  #B81419;  /* pressed / hover */
+  --color-brand-deep:   #6B0000;  /* the gradient's dark end */
+  --color-select:       #F4F4F5;  /* selected rows — neutral, never a red wash (see below) */
 
-  --color-surface-raised: #ffffff;
-  --color-hairline:       #e4e4e7;
-  --color-muted:          #71717a;
+  /* ---- Ink ---- */
+  --color-ink:          #141414;  /* body text — 17:1 on white */
+  --color-ink-display:  #000000;  /* the team number, headlines: the logo's true black */
+  --color-muted:        #52525B;  /* secondary text — 7.7:1 on white */
 
-  /* Status. Kept separate from brand so an alert never reads as a brand colour. */
-  --color-good:    #15803d;
-  --color-warn:    #b45309;
-  --color-danger:  #b91c1c;
+  /* ---- Surfaces ---- */
+  --color-surface:        #FFFFFF;
+  --color-surface-sunk:   #F4F4F5;  /* panels, inset areas */
+  --color-chrome:         #000000;  /* top bars, facilitator nav — the polo */
+  --color-hairline:       #E4E4E7;
 
-  /* The team number has to be readable at arm's length in a noisy room. */
-  --text-team-number: 4.5rem;
+  /* ---- Status ----
+     Brand red is the *action* colour, so destructive actions must never look
+     like a primary button. They are outlined with maroon text; errors use the
+     same maroon with an icon. Nothing relies on colour alone. */
+  --color-danger:  #7F1D1D;  /* 10:1 on white */
+  --color-warn:    #B45309;
+  --color-good:    #15803D;  /* confirmations only — currency uses brand red */
 
-  --font-sans: var(--font-brand, ui-sans-serif, system-ui, sans-serif);
+  /* ---- Type ---- */
+  --font-display: var(--font-oxanium), ui-sans-serif, system-ui, sans-serif;
+  --font-sans:    var(--font-inter),  ui-sans-serif, system-ui, sans-serif;
+
+  /* The team number is read at arm's length across a noisy room. */
+  --text-team-number: 5rem;
 }
 
-/* Minimum tap target (docs/01 N5). Participants are standing, one-handed,
-   possibly outdoors and slightly out of breath. */
 @layer base {
+  body {
+    background: var(--color-surface);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Minimum tap target (docs/01 N5): standing, one-handed, possibly outdoors. */
   button,
   [role='button'],
   a[data-tap],
-  input[type='radio'] + label {
+  label[data-tap] {
     min-height: 44px;
+  }
+}
+
+@layer components {
+  /* Lifted straight from the logo's tagline. The cheapest piece of brand
+     identity in the system — use it for every section label. */
+  .eyebrow {
+    font-family: var(--font-sans);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  /* The wordmark gradient. Reserved for the Core Apex mark itself — not for
+     data, not for currency, and never anywhere near a person's name. */
+  .brand-wordmark {
+    background: linear-gradient(100deg, var(--color-brand-deep), var(--color-brand));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* ── Names are never red ──────────────────────────────────────────────
+     Setting a living person's name in red reads badly in Malaysian corporate
+     settings, and this app puts participant names on nearly every screen.
+     So: names render in ink, on a neutral ground, always. Selection and
+     emphasis use the neutral surface or a black rule — never a red fill or a
+     red tint behind a name. Red is for controls and actions only. */
+  .person-name {
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+  }
+
+  .row-selected {
+    background: var(--color-select);
+    box-shadow: inset 3px 0 0 var(--color-ink-display);
+  }
+
+  .team-number {
+    font-family: var(--font-display);
+    font-size: var(--text-team-number);
+    font-weight: 700;
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+    color: var(--color-ink-display);
   }
 }
